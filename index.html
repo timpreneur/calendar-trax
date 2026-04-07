@@ -892,6 +892,118 @@
     }
 
     /* =====================================================
+       VIZ SECTION — shared scaffolding
+    ===================================================== */
+    #viz-section {
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .viz-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .viz-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: background var(--transition);
+    }
+    .viz-card-header:hover { background: var(--bg-card-hover); }
+    .viz-card-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+    .viz-card-chevron {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      transition: transform var(--transition);
+    }
+    .viz-card.expanded .viz-card-chevron { transform: rotate(180deg); }
+    .viz-card-body { border-top: 1px solid var(--border); padding: 16px 20px; }
+    .viz-card-body.hidden { display: none; }
+    .viz-note {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 20px 0;
+      margin: 0;
+    }
+
+    /* --- Day Timeline Strips --- */
+    .timeline-wrap { display: flex; flex-direction: column; gap: 6px; }
+    .timeline-hour-ticks {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 10px;
+      margin-bottom: 2px;
+    }
+    .timeline-tick-track {
+      display: flex;
+      justify-content: space-between;
+    }
+    .timeline-tick-label { font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono); }
+    .timeline-row { display: grid; grid-template-columns: 70px 1fr; align-items: center; gap: 10px; }
+    .timeline-label { font-size: 0.72rem; color: var(--text-muted); text-align: right; white-space: nowrap; font-family: var(--font-mono); }
+    .timeline-track {
+      position: relative;
+      height: 20px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .timeline-segment {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      border-radius: 3px;
+      min-width: 2px;
+    }
+    .timeline-segment:hover { opacity: 1 !important; }
+
+    /* --- Daily Stacked Bar Chart --- */
+    .bar-chart-wrap { display: flex; flex-direction: column; gap: 12px; }
+    .bar-chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 140px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .bar-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; min-width: 32px; }
+    .bar-stack {
+      width: 28px;
+      border-radius: 4px 4px 0 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 1px;
+    }
+    .bar-segment { width: 100%; min-height: 2px; }
+    .bar-segment:hover { opacity: 0.75; }
+    .bar-day-label { font-size: 0.68rem; color: var(--text-muted); font-family: var(--font-mono); white-space: nowrap; }
+    .bar-chart-legend { display: flex; flex-wrap: wrap; gap: 10px; }
+    .bar-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--text-secondary); }
+    .bar-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* --- Heatmap --- */
+    .heatmap-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .heatmap-grid { display: grid; gap: 2px; min-width: max-content; }
+    .heatmap-cell { width: 28px; height: 18px; border-radius: 2px; }
+    .heatmap-cell:hover { outline: 1px solid rgba(255,255,255,0.25); }
+    .heatmap-row-label { font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono); display: flex; align-items: center; white-space: nowrap; padding-right: 4px; width: 32px; }
+    .heatmap-col-label { font-size: 0.62rem; color: var(--text-muted); font-family: var(--font-mono); display: flex; align-items: center; justify-content: center; height: 18px; width: 28px; }
+
+    /* =====================================================
        RESPONSIVE
     ===================================================== */
     @media (max-width: 768px) {
@@ -1114,6 +1226,44 @@
         </div>
         <div class="chart-legend" id="chart-legend"></div>
       </div>
+
+      <!-- VIZ SECTION -->
+      <div id="viz-section" class="hidden">
+
+        <!-- Day Timeline Strips -->
+        <div class="viz-card expanded" id="viz-card-timeline">
+          <div class="viz-card-header" data-viz="timeline">
+            <span class="viz-card-title">Day Timeline</span>
+            <span class="viz-card-chevron">▼</span>
+          </div>
+          <div class="viz-card-body" id="viz-body-timeline">
+            <div id="viz-timeline-content"></div>
+          </div>
+        </div>
+
+        <!-- Daily Stacked Bar Chart -->
+        <div class="viz-card expanded" id="viz-card-bars">
+          <div class="viz-card-header" data-viz="bars">
+            <span class="viz-card-title">Daily Hours</span>
+            <span class="viz-card-chevron">▼</span>
+          </div>
+          <div class="viz-card-body" id="viz-body-bars">
+            <div id="viz-bars-content"></div>
+          </div>
+        </div>
+
+        <!-- Heatmap -->
+        <div class="viz-card expanded" id="viz-card-heatmap">
+          <div class="viz-card-header" data-viz="heatmap">
+            <span class="viz-card-title">Time-of-Day Heatmap</span>
+            <span class="viz-card-chevron">▼</span>
+          </div>
+          <div class="viz-card-body" id="viz-body-heatmap">
+            <div id="viz-heatmap-content"></div>
+          </div>
+        </div>
+
+      </div><!-- /#viz-section -->
 
       <!-- CATEGORY CARDS -->
       <div id="category-cards"></div>
@@ -1761,6 +1911,291 @@
   }
 
   /* =====================================================
+     VIZ HELPERS
+  ===================================================== */
+
+  function groupByDate(events) {
+    const map = new Map();
+    for (const ev of events) {
+      const d = new Date(ev.start.dateTime);
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(ev);
+    }
+    return map;
+  }
+
+  function getDatesInRange(from, to) {
+    const dates = [];
+    const cur = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+    const end = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+    while (cur <= end && dates.length < 35) {
+      dates.push(`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`);
+      cur.setDate(cur.getDate() + 1);
+    }
+    return dates;
+  }
+
+  function hexToRgba(hex, opacity) {
+    let h = hex.replace('#', '');
+    if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    const r = parseInt(h.substring(0,2), 16);
+    const g = parseInt(h.substring(2,4), 16);
+    const b = parseInt(h.substring(4,6), 16);
+    return `rgba(${r},${g},${b},${opacity})`;
+  }
+
+  function fmtDateKey(dateKey) {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    const dt = new Date(y, m-1, d);
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    return `${days[dt.getDay()]} ${m}/${d}`;
+  }
+
+  /* =====================================================
+     RENDER — VIZ 1: DAY TIMELINE STRIPS
+  ===================================================== */
+
+  const TL_START_MIN = 5 * 60;   // 5:00 AM
+  const TL_END_MIN   = 24 * 60;  // midnight
+  const TL_WINDOW    = TL_END_MIN - TL_START_MIN;
+
+  function eventToTimelineGeom(ev) {
+    const startDt = new Date(ev.start.dateTime);
+    const endDt   = new Date(ev.end.dateTime);
+    const startMin = startDt.getHours() * 60 + startDt.getMinutes();
+    const endMin   = endDt.getHours()   * 60 + endDt.getMinutes();
+    const cStart = Math.max(startMin, TL_START_MIN);
+    const cEnd   = Math.min(endMin,   TL_END_MIN);
+    if (cStart >= cEnd) return null;
+    return {
+      left:  ((cStart - TL_START_MIN) / TL_WINDOW * 100).toFixed(3),
+      width: Math.max((cEnd - cStart) / TL_WINDOW * 100, 0.2).toFixed(3),
+    };
+  }
+
+  function renderTimelineStrips() {
+    const container = document.getElementById('viz-timeline-content');
+    container.innerHTML = '';
+    const allFiltered = filterByMode(state.allEvents, state.viewMode);
+    if (!allFiltered.length) {
+      container.innerHTML = '<p class="viz-note">No events in this period.</p>';
+      return;
+    }
+    const dates  = getDatesInRange(state.dateFrom, state.dateTo);
+    const byDate = groupByDate(allFiltered);
+    const wrap   = document.createElement('div');
+    wrap.className = 'timeline-wrap';
+
+    // Hour tick header
+    const TICK_HOURS = [5, 8, 11, 14, 17, 20, 23];
+    const tickRow = document.createElement('div');
+    tickRow.className = 'timeline-hour-ticks';
+    tickRow.appendChild(document.createElement('div')); // spacer
+    const tickTrack = document.createElement('div');
+    tickTrack.className = 'timeline-tick-track';
+    for (const h of TICK_HOURS) {
+      const s = document.createElement('span');
+      s.className = 'timeline-tick-label';
+      s.textContent = h === 12 ? '12p' : h > 12 ? `${h-12}p` : `${h}a`;
+      tickTrack.appendChild(s);
+    }
+    tickRow.appendChild(tickTrack);
+    wrap.appendChild(tickRow);
+
+    for (const dateKey of dates) {
+      const events = byDate.get(dateKey) || [];
+      const row    = document.createElement('div');
+      row.className = 'timeline-row';
+      const lbl = document.createElement('div');
+      lbl.className = 'timeline-label';
+      lbl.textContent = fmtDateKey(dateKey);
+      const track = document.createElement('div');
+      track.className = 'timeline-track';
+      for (const ev of events) {
+        const geom = eventToTimelineGeom(ev);
+        if (!geom) continue;
+        const cat   = isSleep(ev) ? { hex: '#3F51B5' } : getCategory(ev);
+        const seg   = document.createElement('div');
+        seg.className = 'timeline-segment';
+        seg.style.left       = `${geom.left}%`;
+        seg.style.width      = `${geom.width}%`;
+        seg.style.background = cat.hex;
+        seg.style.opacity    = isPlanned(ev) ? '0.4' : '0.85';
+        const fmt = dt => new Date(dt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        seg.title = `${ev.summary || '(no title)'} · ${fmt(ev.start.dateTime)} → ${fmt(ev.end.dateTime)} · ${fmtDuration(durationMinutes(ev))}`;
+        track.appendChild(seg);
+      }
+      row.appendChild(lbl);
+      row.appendChild(track);
+      wrap.appendChild(row);
+    }
+    container.appendChild(wrap);
+  }
+
+  /* =====================================================
+     RENDER — VIZ 2: DAILY STACKED BAR CHART
+  ===================================================== */
+
+  const MAX_BAR_HEIGHT = 140;
+
+  function renderDailyBars() {
+    const container = document.getElementById('viz-bars-content');
+    container.innerHTML = '';
+    if (numDaysInRange(state.dateFrom, state.dateTo) <= 1) {
+      container.innerHTML = '<p class="viz-note">Select a multi-day range to see the daily bar chart.</p>';
+      return;
+    }
+    const filtered = filterByMode(state.allEvents, state.viewMode).filter(e => !isSleep(e));
+    if (!filtered.length) {
+      container.innerHTML = '<p class="viz-note">No events in this period.</p>';
+      return;
+    }
+    const dates  = getDatesInRange(state.dateFrom, state.dateTo);
+    const byDate = groupByDate(filtered);
+
+    let maxDayMins = 0;
+    for (const dateKey of dates) {
+      const total = (byDate.get(dateKey) || []).reduce((s, e) => s + durationMinutes(e), 0);
+      if (total > maxDayMins) maxDayMins = total;
+    }
+    if (!maxDayMins) { container.innerHTML = '<p class="viz-note">No timed events in this period.</p>'; return; }
+
+    const catsSeen = new Map();
+    for (const evs of byDate.values())
+      for (const ev of evs) { const c = getCategory(ev); if (!catsSeen.has(c.id)) catsSeen.set(c.id, c); }
+
+    const wrap  = document.createElement('div'); wrap.className = 'bar-chart-wrap';
+    const bars  = document.createElement('div'); bars.className = 'bar-chart-bars';
+
+    for (const dateKey of dates) {
+      const evs    = byDate.get(dateKey) || [];
+      const catMin = new Map();
+      for (const ev of evs) {
+        const c = getCategory(ev);
+        catMin.set(c.id, (catMin.get(c.id) || 0) + durationMinutes(ev));
+      }
+      const dayTotal = [...catMin.values()].reduce((s, m) => s + m, 0);
+      const barH     = (dayTotal / maxDayMins) * MAX_BAR_HEIGHT;
+      const col      = document.createElement('div'); col.className = 'bar-col';
+      const stack    = document.createElement('div'); stack.className = 'bar-stack';
+      stack.style.height = `${barH.toFixed(1)}px`;
+      stack.title = `${fmtDateKey(dateKey)}: ${fmtDuration(dayTotal)}`;
+      [...catMin.entries()].sort((a,b) => b[1]-a[1]).forEach(([id, mins]) => {
+        const c   = catsSeen.get(id);
+        const seg = document.createElement('div'); seg.className = 'bar-segment';
+        seg.style.height     = `${(mins / maxDayMins * MAX_BAR_HEIGHT).toFixed(1)}px`;
+        seg.style.background = c.hex;
+        seg.title = `${c.label}: ${fmtDuration(mins)}`;
+        stack.appendChild(seg);
+      });
+      const [, m, d] = dateKey.split('-').map(Number);
+      const lbl = document.createElement('div'); lbl.className = 'bar-day-label';
+      lbl.textContent = `${m}/${d}`;
+      col.appendChild(stack); col.appendChild(lbl); bars.appendChild(col);
+    }
+
+    const legend = document.createElement('div'); legend.className = 'bar-chart-legend';
+    for (const [, cat] of catsSeen) {
+      const item = document.createElement('div'); item.className = 'bar-legend-item';
+      item.innerHTML = `<span class="bar-legend-dot" style="background:${cat.hex}"></span>${esc(cat.label)}`;
+      legend.appendChild(item);
+    }
+    wrap.appendChild(bars); wrap.appendChild(legend); container.appendChild(wrap);
+  }
+
+  /* =====================================================
+     RENDER — VIZ 3: TIME-OF-DAY HEATMAP
+  ===================================================== */
+
+  const HM_START_HOUR = 5;
+  const HM_END_HOUR   = 23;
+
+  function renderHeatmap() {
+    const container = document.getElementById('viz-heatmap-content');
+    container.innerHTML = '';
+    if (numDaysInRange(state.dateFrom, state.dateTo) < 2) {
+      container.innerHTML = '<p class="viz-note">Select a multi-day range to see the heatmap.</p>';
+      return;
+    }
+    const filtered = filterByMode(state.allEvents, state.viewMode).filter(e => !isSleep(e));
+    if (!filtered.length) {
+      container.innerHTML = '<p class="viz-note">No events in this period.</p>';
+      return;
+    }
+    const dates   = getDatesInRange(state.dateFrom, state.dateTo);
+    const byDate  = groupByDate(filtered);
+    const numRows = HM_END_HOUR - HM_START_HOUR + 1;
+
+    // Build cells[hourIdx][dateIdx] = Map(catId → { hex, mins })
+    const cells = Array.from({ length: numRows }, () => new Array(dates.length).fill(null));
+    for (let di = 0; di < dates.length; di++) {
+      for (const ev of (byDate.get(dates[di]) || [])) {
+        const startDt = new Date(ev.start.dateTime);
+        const endDt   = new Date(ev.end.dateTime);
+        const cat     = getCategory(ev);
+        for (let h = HM_START_HOUR; h <= HM_END_HOUR; h++) {
+          const hStart = h * 60, hEnd = (h + 1) * 60;
+          const eStart = startDt.getHours() * 60 + startDt.getMinutes();
+          const eEnd   = endDt.getHours()   * 60 + endDt.getMinutes();
+          const overlap = Math.min(eEnd, hEnd) - Math.max(eStart, hStart);
+          if (overlap <= 0) continue;
+          const hi = h - HM_START_HOUR;
+          if (!cells[hi][di]) cells[hi][di] = new Map();
+          const cm = cells[hi][di];
+          if (!cm.has(cat.id)) cm.set(cat.id, { hex: cat.hex, mins: 0 });
+          cm.get(cat.id).mins += overlap;
+        }
+      }
+    }
+
+    const scroll = document.createElement('div'); scroll.className = 'heatmap-scroll';
+    const grid   = document.createElement('div'); grid.className = 'heatmap-grid';
+    grid.style.gridTemplateColumns = `32px repeat(${dates.length}, 28px)`;
+
+    // Header row
+    grid.appendChild(document.createElement('div')); // corner
+    for (const dateKey of dates) {
+      const [, m, d] = dateKey.split('-').map(Number);
+      const lbl = document.createElement('div'); lbl.className = 'heatmap-col-label';
+      lbl.textContent = `${m}/${d}`; grid.appendChild(lbl);
+    }
+
+    // Data rows
+    for (let hi = 0; hi < numRows; hi++) {
+      const h    = HM_START_HOUR + hi;
+      const lbl  = document.createElement('div'); lbl.className = 'heatmap-row-label';
+      lbl.textContent = h === 12 ? '12p' : h > 12 ? `${h-12}p` : `${h}a`;
+      grid.appendChild(lbl);
+      for (let di = 0; di < dates.length; di++) {
+        const cell = document.createElement('div'); cell.className = 'heatmap-cell';
+        const cm   = cells[hi][di];
+        if (cm) {
+          let best = null, total = 0;
+          for (const [, v] of cm) { total += v.mins; if (!best || v.mins > best.mins) best = v; }
+          cell.style.background = hexToRgba(best.hex, Math.min(1, Math.max(0.1, total / 60)));
+          cell.title = `${fmtDateKey(dates[di])} ${h > 12 ? h-12 : h}${h < 12 ? 'am' : 'pm'}: ${fmtDuration(total)}`;
+        } else {
+          cell.style.background = 'rgba(255,255,255,0.03)';
+        }
+        grid.appendChild(cell);
+      }
+    }
+    scroll.appendChild(grid); container.appendChild(scroll);
+  }
+
+  /* =====================================================
+     RENDER — VIZ SECTION ORCHESTRATOR
+  ===================================================== */
+
+  function renderVizSection() {
+    document.getElementById('viz-section').classList.remove('hidden');
+    renderTimelineStrips();
+    renderDailyBars();
+    renderHeatmap();
+  }
+
+  /* =====================================================
      MAIN LOAD CYCLE
   ===================================================== */
 
@@ -1794,6 +2229,7 @@
         document.getElementById("empty-state").classList.remove("hidden");
         document.getElementById("summary-row").classList.add("hidden");
         document.getElementById("chart-section").classList.add("hidden");
+        document.getElementById("viz-section").classList.add("hidden");
         document.getElementById("category-cards").classList.add("hidden");
         document.getElementById("breakdown-section").classList.add("hidden");
       } else {
@@ -1807,6 +2243,7 @@
         renderCategoryCards();
         renderBreakdownTable();
         renderSleepSection();
+        renderVizSection();
       }
     } catch (err) {
       hideLoading();
@@ -1991,6 +2428,7 @@
         renderCategoryCards();
         renderBreakdownTable();
         renderSleepSection();
+        renderVizSection();
       });
     });
 
@@ -2024,6 +2462,17 @@
       const body    = document.getElementById("sleep-body");
       const isOpen  = section.classList.toggle("expanded");
       body.classList.toggle("hidden", !isOpen);
+    });
+
+    // Viz card expand/collapse
+    document.querySelectorAll(".viz-card-header").forEach(header => {
+      header.addEventListener("click", () => {
+        const card   = header.closest(".viz-card");
+        const body   = card.querySelector(".viz-card-body");
+        const isOpen = card.classList.toggle("expanded");
+        body.classList.toggle("hidden", !isOpen);
+        header.querySelector(".viz-card-chevron").textContent = isOpen ? "▼" : "▶";
+      });
     });
 
     // Error dismiss
