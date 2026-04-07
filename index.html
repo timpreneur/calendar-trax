@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar TRAX</title>
+  <style>
+    /* =====================================================
+       RESET & BASE
+    ===================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+
+    /* =====================================================
+       DESIGN TOKENS
+    ===================================================== */
+    :root {
+      --bg-base:        #0d0d1a;
+      --bg-surface:     #13131f;
+      --bg-card:        #1a1a2e;
+      --bg-card-hover:  #222236;
+      --bg-input:       #1e1e30;
+      --text-primary:   #e2e2f0;
+      --text-secondary: #9090b0;
+      --text-muted:     #5a5a78;
+      --accent:         #7c6af7;
+      --accent-dim:     rgba(124, 106, 247, 0.15);
+      --border:         rgba(255,255,255,0.07);
+      --border-hover:   rgba(255,255,255,0.14);
+      --shadow-sm:      0 2px 8px rgba(0,0,0,0.4);
+      --shadow-md:      0 4px 20px rgba(0,0,0,0.5);
+      --radius-sm:      6px;
+      --radius-md:      10px;
+      --radius-lg:      16px;
+      --font:           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono:      "SF Mono", "Fira Code", "Cascadia Code", monospace;
+      --transition:     180ms ease;
+    }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .hidden { display: none !important; }
+
+    /* =====================================================
+       SETUP SCREEN
+    ===================================================== */
+    #setup-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .setup-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      max-width: 560px;
+      width: 100%;
+      box-shadow: var(--shadow-md);
+    }
+    .setup-card h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .setup-card .subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+    .setup-steps {
+      margin-bottom: 28px;
+    }
+    .setup-steps h3 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .setup-step {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    .setup-step .num {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+    .setup-builder h3 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .setup-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .setup-row input {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-family: var(--font);
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .setup-row input:focus { border-color: var(--accent); }
+    .setup-row input::placeholder { color: var(--text-muted); }
+    .generated-url-wrap {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+    }
+    #generated-url {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+      word-break: break-all;
+      text-decoration: none;
+    }
+    #generated-url:empty::before {
+      content: "Enter your key and calendar ID above";
+      color: var(--text-muted);
+      font-family: var(--font);
+      font-size: 0.85rem;
+    }
+    .btn-copy {
+      flex-shrink: 0;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .btn-copy:hover { background: rgba(124,106,247,0.25); }
+
+    /* =====================================================
+       APP WRAPPER
+    ===================================================== */
+    #app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+    header {
+      margin-bottom: 28px;
+    }
+    .header-top {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .app-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    #date-display {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .range-buttons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .range-dropdown-wrap {
+      position: relative;
+    }
+    .range-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-hover);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 148px;
+      z-index: 100;
+    }
+    .range-dropdown.hidden { display: none; }
+    .btn-range-dd {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-family: var(--font);
+      cursor: pointer;
+      text-align: left;
+      transition: background var(--transition), color var(--transition);
+      white-space: nowrap;
+    }
+    .btn-range-dd:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+    .btn-range-dd.active {
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .btn-range {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition), color var(--transition);
+      font-family: var(--font);
+    }
+    .btn-range:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+    .btn-range.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* View mode toggle */
+    .view-toggle {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-top: 10px;
+      width: fit-content;
+    }
+    .btn-view {
+      background: var(--bg-card);
+      border: none;
+      border-right: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 16px;
+      font-size: 0.82rem;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+    }
+    .btn-view:last-child { border-right: none; }
+    .btn-view:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+    .btn-view.active-results {
+      background: rgba(51, 182, 121, 0.12);
+      color: #33B679;
+    }
+    .btn-view.active-planned {
+      background: rgba(124, 106, 247, 0.12);
+      color: var(--accent);
+    }
+    .btn-view.active-all {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+    #custom-pickers {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    #custom-pickers input[type="date"] {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      font-size: 0.85rem;
+      font-family: var(--font);
+      color-scheme: dark;
+      outline: none;
+      cursor: pointer;
+      transition: border-color var(--transition);
+    }
+    #custom-pickers input[type="date"]:focus { border-color: var(--accent); }
+    #custom-pickers span { color: var(--text-muted); font-size: 0.85rem; }
+    #btn-apply-custom {
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      border-radius: var(--radius-sm);
+      padding: 7px 16px;
+      font-size: 0.85rem;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: opacity var(--transition);
+    }
+    #btn-apply-custom:hover { opacity: 0.85; }
+
+    /* =====================================================
+       LOADING
+    ===================================================== */
+    #loading {
+      text-align: center;
+      padding: 60px 0;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading p { color: var(--text-muted); font-size: 0.9rem; }
+
+    /* =====================================================
+       ERROR BANNER
+    ===================================================== */
+    #error-banner {
+      background: rgba(220, 50, 50, 0.12);
+      border: 1px solid rgba(220, 50, 50, 0.4);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    #error-message { flex: 1; color: #f87171; font-size: 0.9rem; }
+    .btn-dismiss {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color var(--transition);
+    }
+    .btn-dismiss:hover { color: var(--text-primary); }
+
+    /* =====================================================
+       EMPTY STATE
+    ===================================================== */
+    #empty-state {
+      text-align: center;
+      padding: 60px 0;
+    }
+    #empty-state p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* =====================================================
+       SUMMARY ROW
+    ===================================================== */
+    #summary-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .summary-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+    }
+    .summary-label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .summary-value {
+      display: block;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+    .summary-sub {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* =====================================================
+       DONUT CHART
+    ===================================================== */
+    #chart-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    #chart-section h2 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .chart-left {
+      flex-shrink: 0;
+      position: relative;
+      width: 180px;
+      height: 180px;
+    }
+    #donut-svg {
+      width: 180px;
+      height: 180px;
+      transform: rotate(-90deg);
+    }
+    .donut-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .donut-total {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .donut-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .chart-legend {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+    .legend-row {
+      display: grid;
+      grid-template-columns: 10px 1fr auto auto;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      padding: 3px 6px;
+      margin: -3px -6px;
+      transition: background var(--transition);
+    }
+    .legend-row:hover { background: var(--bg-card-hover); }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .legend-label {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .legend-hours {
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+    .legend-pct {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      min-width: 36px;
+      text-align: right;
+    }
+    @media (max-width: 600px) {
+      #chart-section { flex-direction: column; gap: 20px; }
+      .chart-left { width: 160px; height: 160px; }
+      #donut-svg { width: 160px; height: 160px; }
+    }
+
+    /* =====================================================
+       CATEGORY CARDS
+    ===================================================== */
+    #category-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .category-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--cat-color, #555);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      user-select: none;
+    }
+    .category-card:hover {
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    .category-card.active {
+      box-shadow: 0 0 0 2px var(--cat-color, #555);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--cat-color, #555);
+      flex-shrink: 0;
+    }
+    .cat-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-hours {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 2px;
+    }
+    .card-percent {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .bar-track {
+      background: rgba(255,255,255,0.06);
+      border-radius: 99px;
+      height: 5px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      background: var(--cat-color, #555);
+      border-radius: 99px;
+      height: 100%;
+      transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-sessions {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* =====================================================
+       BREAKDOWN TABLE
+    ===================================================== */
+    #breakdown-section {
+      margin-bottom: 28px;
+    }
+    #breakdown-section h2 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    thead th {
+      background: var(--bg-surface);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color var(--transition);
+      user-select: none;
+    }
+    thead th:hover { color: var(--text-primary); }
+    thead th.active-sort { color: var(--accent); }
+    .sort-icon { margin-left: 4px; font-size: 0.7em; opacity: 0.7; }
+    tbody tr {
+      border-top: 1px solid var(--border);
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    tbody tr:hover { background: var(--bg-card-hover); }
+    tbody tr.active-row { background: rgba(124,106,247,0.06); }
+    tbody td {
+      padding: 13px 16px;
+      color: var(--text-secondary);
+    }
+    .td-category {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    /* =====================================================
+       DRILL-DOWN
+    ===================================================== */
+    #drilldown-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    #drilldown-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    #drilldown-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    #btn-drilldown-close {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: color var(--transition), border-color var(--transition);
+    }
+    #btn-drilldown-close:hover {
+      color: var(--text-primary);
+      border-color: var(--border-hover);
+    }
+    #drilldown-list { padding: 8px 0; }
+    .event-row {
+      display: grid;
+      grid-template-columns: 14px 1fr auto auto auto auto;
+      align-items: center;
+      gap: 14px;
+      padding: 11px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+    .event-row:last-child { border-bottom: none; }
+    .event-row:hover { background: var(--bg-card-hover); }
+    .event-row.is-planned {
+      opacity: 0.75;
+    }
+    .event-row.is-planned .event-title { font-style: italic; }
+    .status-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 99px;
+      white-space: nowrap;
+      letter-spacing: 0.04em;
+    }
+    .badge-planned {
+      background: rgba(124, 106, 247, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(124, 106, 247, 0.3);
+    }
+    .badge-results {
+      background: rgba(51, 182, 121, 0.12);
+      color: #33B679;
+      border: 1px solid rgba(51, 182, 121, 0.25);
+    }
+
+    /* =====================================================
+       SLEEP SECTION
+    ===================================================== */
+    #sleep-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid #3F51B5;
+      border-radius: var(--radius-lg);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    #sleep-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: background var(--transition);
+    }
+    #sleep-header:hover { background: var(--bg-card-hover); }
+    .sleep-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sleep-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .sleep-stats-inline {
+      display: flex;
+      gap: 16px;
+    }
+    .sleep-stat {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .sleep-stat strong {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .sleep-chevron {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      transition: transform var(--transition);
+    }
+    #sleep-section.expanded .sleep-chevron { transform: rotate(180deg); }
+    #sleep-body {
+      border-top: 1px solid var(--border);
+      padding: 8px 0;
+    }
+    .sleep-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sleep-row:last-child { border-bottom: none; }
+    .sleep-date {
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .sleep-time {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+    .sleep-bar-wrap {
+      width: 80px;
+      height: 5px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .sleep-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: #3F51B5;
+    }
+    .sleep-duration {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      min-width: 52px;
+      text-align: right;
+    }
+    .event-badge {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--cat-color, #555);
+      flex-shrink: 0;
+    }
+    .event-title {
+      font-size: 0.88rem;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .event-date {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .event-time {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      font-family: var(--font-mono);
+    }
+    .event-duration {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      text-align: right;
+      min-width: 52px;
+    }
+    .drilldown-empty {
+      padding: 24px 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+    @media (max-width: 768px) {
+      #app { padding: 16px 16px 40px; }
+      #summary-row { grid-template-columns: 1fr 1fr; }
+      .summary-value { font-size: 1.3rem; }
+      .header-top { flex-direction: column; gap: 8px; }
+      .event-row { grid-template-columns: 14px 1fr auto; }
+      .event-date, .event-time { display: none; }
+      .setup-card { padding: 28px 20px; }
+    }
+    @media (max-width: 480px) {
+      #summary-row { grid-template-columns: 1fr; }
+      #category-cards { grid-template-columns: 1fr; }
+    }
+
+    /* =====================================================
+       DEBUG PANEL
+    ===================================================== */
+    #debug-panel {
+      background: rgba(255, 200, 0, 0.06);
+      border: 1px solid rgba(255, 200, 0, 0.25);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      font-size: 0.85rem;
+    }
+    #debug-panel h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #f6bf26;
+      margin-bottom: 10px;
+    }
+    #debug-panel p {
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-size: 0.82rem;
+    }
+    .debug-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    .debug-row:last-child { border-bottom: none; }
+    .debug-color-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #9E9E9E;
+      flex-shrink: 0;
+    }
+    .debug-id { color: #f6bf26; min-width: 80px; }
+    .debug-mapped { color: #33B679; }
+    .debug-unmapped { color: #f87171; }
+    .btn-debug-close {
+      margin-top: 12px;
+      background: none;
+      border: 1px solid rgba(255,200,0,0.3);
+      color: #f6bf26;
+      border-radius: var(--radius-sm);
+      padding: 5px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: var(--font);
+    }
+    .btn-debug-close:hover { background: rgba(255,200,0,0.08); }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================
+       SETUP SCREEN
+  =================================================== -->
+  <div id="setup-screen" class="hidden">
+    <div class="setup-card">
+      <h1>Calendar TRAX</h1>
+      <p class="subtitle">Time tracking dashboard powered by Google Calendar.</p>
+
+      <div class="setup-steps">
+        <h3>Setup checklist</h3>
+        <div class="setup-step">
+          <span class="num">1</span>
+          <span>Create a Google Calendar and set it to <strong>Make available to public</strong> (read-only).</span>
+        </div>
+        <div class="setup-step">
+          <span class="num">2</span>
+          <span>In Google Cloud Console, enable the <strong>Google Calendar API</strong> and create an <strong>API key</strong> restricted to the Calendar API.</span>
+        </div>
+        <div class="setup-step">
+          <span class="num">3</span>
+          <span>Copy your <strong>Calendar ID</strong> from Calendar Settings (looks like <code style="font-family:var(--font-mono);font-size:0.85em">xxx@group.calendar.google.com</code>).</span>
+        </div>
+        <div class="setup-step">
+          <span class="num">4</span>
+          <span>Enter both below, copy the generated link, and bookmark it.</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="setup-builder">
+        <h3>Generate your dashboard URL</h3>
+        <div class="setup-row">
+          <input type="text" id="setup-key" placeholder="Google API Key" autocomplete="off" spellcheck="false">
+          <input type="text" id="setup-cal" placeholder="Calendar ID (e.g. abc123@group.calendar.google.com)" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="generated-url-wrap">
+          <a id="generated-url" href="#" target="_blank"></a>
+          <button class="btn-copy" id="btn-copy">Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       MAIN APP
+  =================================================== -->
+  <div id="app" class="hidden">
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-top">
+        <h1 class="app-title">Calendar TRAX</h1>
+        <span id="date-display"></span>
+      </div>
+      <div class="range-buttons">
+        <button class="btn-range" data-range="today">Today</button>
+        <button class="btn-range" data-range="thisweek">This Week</button>
+        <div class="range-dropdown-wrap">
+          <button class="btn-range" id="btn-more-ranges">More ▾</button>
+          <div class="range-dropdown hidden" id="range-dropdown">
+            <button class="btn-range-dd" data-range="1">Yesterday</button>
+            <button class="btn-range-dd" data-range="3">Last 3 Days</button>
+            <button class="btn-range-dd" data-range="7">Last 7 Days</button>
+            <button class="btn-range-dd" data-range="30">Last 30 Days</button>
+            <button class="btn-range-dd" data-range="tomorrow">Tomorrow</button>
+            <button class="btn-range-dd" data-range="next3">Next 3 Days</button>
+            <button class="btn-range-dd" data-range="next7">Next 7 Days</button>
+            <button class="btn-range-dd" data-range="custom">Custom</button>
+          </div>
+        </div>
+      </div>
+      <div class="view-toggle">
+        <button class="btn-view active-all" data-view="all">All</button>
+        <button class="btn-view" data-view="results">Results</button>
+        <button class="btn-view" data-view="planned">Planned</button>
+      </div>
+
+      <div id="custom-pickers" class="hidden">
+        <input type="date" id="date-from">
+        <span>to</span>
+        <input type="date" id="date-to">
+        <button id="btn-apply-custom">Apply</button>
+      </div>
+    </header>
+
+    <!-- LOADING -->
+    <div id="loading" class="hidden">
+      <div class="spinner"></div>
+      <p>Fetching events…</p>
+    </div>
+
+    <!-- ERROR -->
+    <div id="error-banner" class="hidden">
+      <span id="error-message"></span>
+      <button class="btn-dismiss" id="btn-dismiss-error">✕</button>
+    </div>
+
+    <!-- DEBUG PANEL (dismiss once categories look correct) -->
+    <div id="debug-panel" class="hidden">
+      <h3>🔍 Debug — hashtag matches found in your events</h3>
+      <p>Events are categorized by #hashtag in their title. Anything showing "Uncategorized" has no matching tag — add one to the event title in Google Calendar, or add the tag to HASHTAG_MAP in the script.</p>
+      <div id="debug-list"></div>
+      <button class="btn-debug-close" id="btn-debug-close">Dismiss</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="hidden">
+
+      <!-- Empty state -->
+      <div id="empty-state" class="hidden">
+        <p>No timed events found for this period.</p>
+      </div>
+
+      <!-- SUMMARY ROW -->
+      <div id="summary-row">
+        <div class="summary-card">
+          <span class="summary-label">Total Hours</span>
+          <span class="summary-value" id="stat-total-hours">—</span>
+          <span class="summary-sub" id="stat-total-split"></span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Sessions</span>
+          <span class="summary-value" id="stat-sessions">—</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Top Category</span>
+          <span class="summary-value" id="stat-top-cat">—</span>
+          <span class="summary-sub" id="stat-top-cat-hours"></span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-label">Avg / Day</span>
+          <span class="summary-value" id="stat-avg-day">—</span>
+        </div>
+      </div>
+
+      <!-- DONUT CHART -->
+      <div id="chart-section">
+        <div class="chart-left">
+          <svg id="donut-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div class="donut-center">
+            <span class="donut-total" id="donut-total">—</span>
+            <span class="donut-label" id="donut-sublabel">total</span>
+          </div>
+        </div>
+        <div class="chart-legend" id="chart-legend"></div>
+      </div>
+
+      <!-- CATEGORY CARDS -->
+      <div id="category-cards"></div>
+
+      <!-- BREAKDOWN TABLE -->
+      <div id="breakdown-section">
+        <h2>Breakdown</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-col="category">Category <span class="sort-icon" id="sort-icon-category"></span></th>
+                <th data-col="hours" class="active-sort">Total Hours <span class="sort-icon" id="sort-icon-hours">▼</span></th>
+                <th data-col="percent">% of Total <span class="sort-icon" id="sort-icon-percent"></span></th>
+                <th data-col="sessions">Sessions <span class="sort-icon" id="sort-icon-sessions"></span></th>
+                <th data-col="avg">Avg Session <span class="sort-icon" id="sort-icon-avg"></span></th>
+              </tr>
+            </thead>
+            <tbody id="breakdown-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DRILL-DOWN -->
+      <div id="drilldown-section" class="hidden">
+        <div id="drilldown-header">
+          <span id="drilldown-title">Events</span>
+          <button id="btn-drilldown-close">Close</button>
+        </div>
+        <div id="drilldown-list"></div>
+      </div>
+
+      <!-- SLEEP SECTION -->
+      <div id="sleep-section" class="hidden">
+        <div id="sleep-header">
+          <div class="sleep-header-left">
+            <span class="sleep-title">😴 Sleep</span>
+            <div class="sleep-stats-inline">
+              <span class="sleep-stat">Total: <strong id="sleep-total">—</strong></span>
+              <span class="sleep-stat">Avg/night: <strong id="sleep-avg">—</strong></span>
+              <span class="sleep-stat">Sessions: <strong id="sleep-count">—</strong></span>
+            </div>
+          </div>
+          <span class="sleep-chevron">▼</span>
+        </div>
+        <div id="sleep-body" class="hidden"></div>
+      </div>
+
+    </div><!-- /#dashboard -->
+  </div><!-- /#app -->
+
+  <script src="config.js"></script>
+  <script>
+  // Configuration loaded from config.js (CUSTOM_COLORS, COLOR_PALETTE, UNCATEGORIZED)
+
+  /* =====================================================
+     STATE
+  ===================================================== */
+
+  const state = {
+    apiKey: "",
+    calendarId: "",
+    rangeType: DEFAULT_RANGE,
+    dateFrom: null,
+    dateTo: null,
+    allEvents: [],
+    sleepEvents: [],
+    categoryData: new Map(),
+    sortCol: "hours",
+    sortDir: "desc",
+    activeDrilldown: null,
+    viewMode: "all", // "all" | "results" | "planned"
+  };
+
+  /* =====================================================
+     DATE HELPERS
+  ===================================================== */
+
+  function getDateRange(type) {
+    const today = new Date();
+    const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
+
+    if (type === "today") {
+      return { from: new Date(y, m, d, 0, 0, 0), to: new Date(y, m, d, 23, 59, 59) };
+    }
+    if (type === "1") {
+      return { from: new Date(y, m, d - 1, 0, 0, 0), to: new Date(y, m, d - 1, 23, 59, 59) };
+    }
+    if (type === "tomorrow") {
+      return { from: new Date(y, m, d + 1, 0, 0, 0), to: new Date(y, m, d + 1, 23, 59, 59) };
+    }
+    if (type === "next3") {
+      return { from: new Date(y, m, d, 0, 0, 0), to: new Date(y, m, d + 3, 23, 59, 59) };
+    }
+    if (type === "next7") {
+      return { from: new Date(y, m, d, 0, 0, 0), to: new Date(y, m, d + 7, 23, 59, 59) };
+    }
+    if (type === "thisweek") {
+      // Monday → Sunday of current week
+      const dow  = today.getDay(); // 0=Sun, 1=Mon...
+      const diff = (dow === 0) ? -6 : 1 - dow; // days back to Monday
+      const from = new Date(y, m, d + diff, 0, 0, 0);
+      const to   = new Date(y, m, d + diff + 6, 23, 59, 59);
+      return { from, to };
+    }
+    if (type === "custom") {
+      return { from: state.dateFrom, to: state.dateTo };
+    }
+    // Last N days (backward presets: "3", "7", "30")
+    const days = parseInt(type, 10);
+    return {
+      from: new Date(y, m, d - days + 1, 0, 0, 0),
+      to:   new Date(y, m, d, 23, 59, 59),
+    };
+  }
+
+  // Build ISO string in local timezone for API params
+  function toRFC3339(date) {
+    const pad = n => String(n).padStart(2, "0");
+    const Y = date.getFullYear();
+    const M = pad(date.getMonth() + 1);
+    const D = pad(date.getDate());
+    const h = pad(date.getHours());
+    const mi = pad(date.getMinutes());
+    const s = pad(date.getSeconds());
+    // Get timezone offset
+    const offset = -date.getTimezoneOffset();
+    const sign = offset >= 0 ? "+" : "-";
+    const absOff = Math.abs(offset);
+    const offH = pad(Math.floor(absOff / 60));
+    const offM = pad(absOff % 60);
+    return `${Y}-${M}-${D}T${h}:${mi}:${s}${sign}${offH}:${offM}`;
+  }
+
+  function formatDateDisplay(from, to) {
+    const opts = { month: "short", day: "numeric" };
+    const fromStr = from.toLocaleDateString(undefined, opts);
+    const toStr   = to.toLocaleDateString(undefined, { ...opts, year: "numeric" });
+    return `${fromStr} – ${toStr}`;
+  }
+
+  function numDaysInRange(from, to) {
+    return Math.max(1, Math.round((to - from) / 86400000));
+  }
+
+  /* =====================================================
+     FORMATTING
+  ===================================================== */
+
+  function fmtDuration(minutes) {
+    if (minutes < 1) return "< 1m";
+    const h = Math.floor(minutes / 60);
+    const m = Math.round(minutes % 60);
+    if (h === 0) return `${m}m`;
+    if (m === 0) return `${h}h`;
+    return `${h}h ${m}m`;
+  }
+
+  function fmtTime(dateStr) {
+    return new Date(dateStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function fmtDate(dateStr) {
+    return new Date(dateStr).toLocaleDateString([], { month: "short", day: "numeric" });
+  }
+
+  /* =====================================================
+     CATEGORY RESOLUTION
+  ===================================================== */
+
+  // Deterministic color from palette — same tag always gets same color
+  function getTagColor(tag) {
+    const lower = tag.toLowerCase();
+    if (CUSTOM_COLORS[lower]) return CUSTOM_COLORS[lower];
+    let hash = 0;
+    for (const ch of lower) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+    return COLOR_PALETTE[hash % COLOR_PALETTE.length];
+  }
+
+  // "#deep_work" → "Deep Work",  "#okr" → "Okr"
+  function tagToLabel(tag) {
+    return tag.slice(1).replace(/[_-]/g, " ")
+      .replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function getCategory(event) {
+    const title = event.summary || "";
+    const match = title.match(/#([a-zA-Z][a-zA-Z0-9_-]*)/);
+    if (match) {
+      const tag = match[0].toLowerCase();
+      return { id: tag, label: tagToLabel(tag), hex: getTagColor(tag) };
+    }
+    return { id: "uncategorized", ...UNCATEGORIZED };
+  }
+
+  // Strip the hashtag from the event title for clean display
+  function cleanTitle(summary, tag) {
+    if (tag === "uncategorized") return summary || "(no title)";
+    return (summary || "").replace(new RegExp(tag, "i"), "").trim() || "(no title)";
+  }
+
+  function durationMinutes(event) {
+    const start = new Date(event.start.dateTime);
+    const end   = new Date(event.end.dateTime);
+    return (end - start) / 60000;
+  }
+
+  /* =====================================================
+     API LAYER
+  ===================================================== */
+
+  function buildApiUrl(from, to, pageToken) {
+    const calId = encodeURIComponent(state.calendarId);
+    const base  = `https://www.googleapis.com/calendar/v3/calendars/${calId}/events`;
+    const params = new URLSearchParams({
+      key:          state.apiKey,
+      timeMin:      toRFC3339(from),
+      timeMax:      toRFC3339(to),
+      singleEvents: "true",
+      orderBy:      "startTime",
+      maxResults:   "2500",
+    });
+    if (pageToken) params.set("pageToken", pageToken);
+    return `${base}?${params}`;
+  }
+
+  async function fetchPage(url) {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!res.ok) {
+      const msg = (data.error && data.error.message) || `HTTP ${res.status}`;
+      throw new Error(msg);
+    }
+    return { items: data.items || [], nextPageToken: data.nextPageToken };
+  }
+
+  async function fetchAllEvents(from, to) {
+    let allItems = [];
+    let pageToken = null;
+    do {
+      const url = buildApiUrl(from, to, pageToken);
+      const { items, nextPageToken } = await fetchPage(url);
+      allItems = allItems.concat(items);
+      pageToken = nextPageToken || null;
+    } while (pageToken);
+    // Filter out all-day events and events with no end time
+    return allItems.filter(e => e.start && e.start.dateTime && e.end && e.end.dateTime);
+  }
+
+  /* =====================================================
+     VIEW MODE FILTERING
+  ===================================================== */
+
+  function isPlanned(event) {
+    return new Date(event.start.dateTime) > new Date();
+  }
+
+  function isSleep(event) {
+    return (event.summary || "").toLowerCase().includes(SLEEP_TAG.toLowerCase());
+  }
+
+  function filterByMode(events, mode) {
+    if (mode === "results") return events.filter(e => !isPlanned(e));
+    if (mode === "planned") return events.filter(e => isPlanned(e));
+    return events; // "all"
+  }
+
+  /* =====================================================
+     DATA PROCESSING
+  ===================================================== */
+
+  function processEvents(events) {
+    const map = new Map();
+    for (const event of events) {
+      const cat = getCategory(event);
+      if (!map.has(cat.id)) {
+        map.set(cat.id, { label: cat.label, hex: cat.hex, minutes: 0, sessions: 0, events: [] });
+      }
+      const entry = map.get(cat.id);
+      const mins = durationMinutes(event);
+      if (mins > 0) {
+        entry.minutes += mins;
+        entry.sessions += 1;
+        entry.events.push(event);
+      }
+    }
+    return map;
+  }
+
+  /* =====================================================
+     SORTING
+  ===================================================== */
+
+  function getSortedCategories() {
+    const entries = Array.from(state.categoryData.entries());
+    const total = entries.reduce((s, [, d]) => s + d.minutes, 0) || 1;
+    const { sortCol, sortDir } = state;
+
+    entries.sort(([, a], [, b]) => {
+      let av, bv;
+      switch (sortCol) {
+        case "category": av = a.label; bv = b.label; break;
+        case "hours":    av = a.minutes; bv = b.minutes; break;
+        case "percent":  av = a.minutes / total; bv = b.minutes / total; break;
+        case "sessions": av = a.sessions; bv = b.sessions; break;
+        case "avg":      av = a.minutes / (a.sessions || 1); bv = b.minutes / (b.sessions || 1); break;
+        default:         av = a.minutes; bv = b.minutes;
+      }
+      if (typeof av === "string") {
+        return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+      }
+      return sortDir === "asc" ? av - bv : bv - av;
+    });
+    return entries;
+  }
+
+  /* =====================================================
+     RENDER — SLEEP SECTION
+  ===================================================== */
+
+  function renderSleepSection() {
+    const section = document.getElementById("sleep-section");
+    const body    = document.getElementById("sleep-body");
+    const events  = state.sleepEvents;
+
+    if (!events.length) {
+      section.classList.add("hidden");
+      return;
+    }
+
+    // Sort by start time
+    const sorted = [...events].sort((a, b) =>
+      new Date(a.start.dateTime) - new Date(b.start.dateTime)
+    );
+
+    const totalMins = sorted.reduce((s, e) => s + durationMinutes(e), 0);
+    const avgMins   = totalMins / sorted.length;
+    const maxMins   = Math.max(...sorted.map(e => durationMinutes(e)));
+
+    document.getElementById("sleep-total").textContent = fmtDuration(totalMins);
+    document.getElementById("sleep-avg").textContent   = fmtDuration(avgMins);
+    document.getElementById("sleep-count").textContent = sorted.length;
+
+    body.innerHTML = "";
+    for (const ev of sorted) {
+      const mins = durationMinutes(ev);
+      const barPct = (mins / maxMins * 100).toFixed(0);
+      const row = document.createElement("div");
+      row.className = "sleep-row";
+      row.innerHTML = `
+        <span class="sleep-date">${fmtDate(ev.start.dateTime)}</span>
+        <span class="sleep-time">${fmtTime(ev.start.dateTime)} → ${fmtTime(ev.end.dateTime)}</span>
+        <div class="sleep-bar-wrap"><div class="sleep-bar-fill" style="width:${barPct}%"></div></div>
+        <span class="sleep-duration">${fmtDuration(mins)}</span>
+      `;
+      body.appendChild(row);
+    }
+
+    section.classList.remove("hidden");
+  }
+
+  /* =====================================================
+     RENDER — DONUT CHART
+  ===================================================== */
+
+  function renderDonutChart() {
+    const svg     = document.getElementById("donut-svg");
+    const legend  = document.getElementById("chart-legend");
+    svg.innerHTML = "";
+    legend.innerHTML = "";
+
+    const entries = getSortedCategories();
+    const totalMins = entries.reduce((s, [, d]) => s + d.minutes, 0);
+    if (!totalMins) return;
+
+    const cx = 100, cy = 100, r = 72, strokeWidth = 32;
+    const circumference = 2 * Math.PI * r;
+    const gap = 2; // px gap between segments
+    let offset = 0;
+
+    // Background track
+    const track = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    track.setAttribute("cx", cx); track.setAttribute("cy", cy); track.setAttribute("r", r);
+    track.setAttribute("fill", "none");
+    track.setAttribute("stroke", "rgba(255,255,255,0.05)");
+    track.setAttribute("stroke-width", strokeWidth);
+    svg.appendChild(track);
+
+    for (const [id, data] of entries) {
+      const pct     = data.minutes / totalMins;
+      const dashLen = Math.max(0, pct * circumference - gap);
+
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", cx); circle.setAttribute("cy", cy); circle.setAttribute("r", r);
+      circle.setAttribute("fill", "none");
+      circle.setAttribute("stroke", data.hex);
+      circle.setAttribute("stroke-width", strokeWidth);
+      circle.setAttribute("stroke-dasharray", `${dashLen} ${circumference}`);
+      circle.setAttribute("stroke-dashoffset", -(offset));
+      circle.setAttribute("stroke-linecap", "butt");
+      circle.style.transition = "stroke-dasharray 600ms cubic-bezier(0.4,0,0.2,1)";
+      circle.style.cursor = "pointer";
+      circle.addEventListener("click", () => onCategoryClick(id));
+      svg.appendChild(circle);
+      offset += pct * circumference;
+
+      // Legend row
+      const pctStr = (pct * 100).toFixed(0);
+      const row = document.createElement("div");
+      row.className = "legend-row";
+      row.innerHTML = `
+        <span class="legend-dot" style="background:${data.hex}"></span>
+        <span class="legend-label">${esc(data.label)}</span>
+        <span class="legend-hours">${fmtDuration(data.minutes)}</span>
+        <span class="legend-pct">${pctStr}%</span>
+      `;
+      row.addEventListener("click", () => onCategoryClick(id));
+      legend.appendChild(row);
+    }
+
+    // Center label
+    document.getElementById("donut-total").textContent = fmtDuration(totalMins);
+    const modeLabel = state.viewMode === "all" ? "total" : state.viewMode;
+    document.getElementById("donut-sublabel").textContent = modeLabel;
+  }
+
+  /* =====================================================
+     RENDER — SUMMARY
+  ===================================================== */
+
+  /* =====================================================
+     DEBUG — show hashtag matches found in event titles
+  ===================================================== */
+
+  function renderDebugPanel(events) {
+    const tally = new Map();
+    for (const ev of events) {
+      const cat = getCategory(ev);
+      const key = cat.id;
+      if (!tally.has(key)) tally.set(key, { ...cat, count: 0 });
+      tally.get(key).count++;
+    }
+
+    const list = document.getElementById("debug-list");
+    list.innerHTML = "";
+
+    for (const [id, data] of [...tally.entries()].sort()) {
+      const isMapped = id !== "uncategorized";
+      const row = document.createElement("div");
+      row.className = "debug-row";
+      row.innerHTML = `
+        <span class="debug-color-dot" style="background:${data.hex}"></span>
+        <span class="debug-id">${esc(id)}</span>
+        <span>${data.count} event${data.count !== 1 ? "s" : ""}</span>
+        <span class="${isMapped ? "debug-mapped" : "debug-unmapped"}">→ ${esc(data.label)}</span>
+      `;
+      list.appendChild(row);
+    }
+
+    document.getElementById("debug-panel").classList.remove("hidden");
+    document.getElementById("btn-debug-close").onclick = () => {
+      document.getElementById("debug-panel").classList.add("hidden");
+    };
+  }
+
+  function renderSummary() {
+    const map = state.categoryData;
+    const entries = Array.from(map.values());
+    const totalMins = entries.reduce((s, d) => s + d.minutes, 0);
+    const totalSessions = entries.reduce((s, d) => s + d.sessions, 0);
+    const numDays = numDaysInRange(state.dateFrom, state.dateTo);
+
+    document.getElementById("stat-total-hours").textContent = fmtDuration(totalMins);
+
+    // In "All" mode, show results vs planned split as a sub-label
+    const splitEl = document.getElementById("stat-total-split");
+    if (state.viewMode === "all") {
+      const resultMins  = state.allEvents.filter(e => !isPlanned(e)).reduce((s, e) => s + durationMinutes(e), 0);
+      const plannedMins = state.allEvents.filter(e =>  isPlanned(e)).reduce((s, e) => s + durationMinutes(e), 0);
+      splitEl.textContent = `${fmtDuration(resultMins)} results · ${fmtDuration(plannedMins)} planned`;
+    } else {
+      splitEl.textContent = state.viewMode === "results" ? "Results only" : "Planned only";
+    }
+
+    document.getElementById("stat-sessions").textContent = totalSessions;
+
+    // Top category
+    let topEntry = null, topId = null;
+    for (const [id, d] of map) {
+      if (!topEntry || d.minutes > topEntry.minutes) { topEntry = d; topId = id; }
+    }
+    if (topEntry) {
+      document.getElementById("stat-top-cat").textContent = topEntry.label;
+      document.getElementById("stat-top-cat-hours").textContent = fmtDuration(topEntry.minutes);
+    } else {
+      document.getElementById("stat-top-cat").textContent = "—";
+      document.getElementById("stat-top-cat-hours").textContent = "";
+    }
+
+    document.getElementById("stat-avg-day").textContent = fmtDuration(totalMins / numDays);
+  }
+
+  /* =====================================================
+     RENDER — CATEGORY CARDS
+  ===================================================== */
+
+  function renderCategoryCards() {
+    const container = document.getElementById("category-cards");
+    container.innerHTML = "";
+    const entries = getSortedCategories();
+    const total = entries.reduce((s, [, d]) => s + d.minutes, 0) || 1;
+
+    for (const [id, data] of entries) {
+      const pct = (data.minutes / total * 100).toFixed(0);
+      const card = document.createElement("div");
+      card.className = "category-card" + (state.activeDrilldown === id ? " active" : "");
+      card.dataset.catId = id;
+      card.style.setProperty("--cat-color", data.hex);
+      card.innerHTML = `
+        <div class="card-header">
+          <span class="color-dot"></span>
+          <span class="cat-label">${esc(data.label)}</span>
+        </div>
+        <div class="card-hours">${fmtDuration(data.minutes)}</div>
+        <div class="card-percent">${pct}% of total</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <div class="card-sessions">${data.sessions} session${data.sessions !== 1 ? "s" : ""}</div>
+      `;
+      card.addEventListener("click", () => onCategoryClick(id));
+      container.appendChild(card);
+    }
+  }
+
+  /* =====================================================
+     RENDER — BREAKDOWN TABLE
+  ===================================================== */
+
+  function renderBreakdownTable() {
+    const tbody = document.getElementById("breakdown-tbody");
+    tbody.innerHTML = "";
+    const entries = getSortedCategories();
+    const total = entries.reduce((s, [, d]) => s + d.minutes, 0) || 1;
+
+    // Update sort icons
+    const cols = ["category", "hours", "percent", "sessions", "avg"];
+    for (const col of cols) {
+      const el = document.getElementById(`sort-icon-${col}`);
+      const th = el.closest("th");
+      if (col === state.sortCol) {
+        el.textContent = state.sortDir === "desc" ? "▼" : "▲";
+        th.classList.add("active-sort");
+      } else {
+        el.textContent = "";
+        th.classList.remove("active-sort");
+      }
+    }
+
+    for (const [id, data] of entries) {
+      const pct = (data.minutes / total * 100).toFixed(0);
+      const avg = fmtDuration(data.minutes / (data.sessions || 1));
+      const tr = document.createElement("tr");
+      if (state.activeDrilldown === id) tr.classList.add("active-row");
+      tr.dataset.catId = id;
+      tr.innerHTML = `
+        <td>
+          <div class="td-category">
+            <span class="swatch" style="background:${data.hex}"></span>
+            ${esc(data.label)}
+          </div>
+        </td>
+        <td>${fmtDuration(data.minutes)}</td>
+        <td>${pct}%</td>
+        <td>${data.sessions}</td>
+        <td>${avg}</td>
+      `;
+      tr.addEventListener("click", () => onCategoryClick(id));
+      tbody.appendChild(tr);
+    }
+  }
+
+  /* =====================================================
+     RENDER — DRILL-DOWN
+  ===================================================== */
+
+  function renderDrilldown(id) {
+    const data = state.categoryData.get(id);
+    const section = document.getElementById("drilldown-section");
+    const list = document.getElementById("drilldown-list");
+    const title = document.getElementById("drilldown-title");
+
+    title.textContent = `Events — ${data.label}`;
+    list.innerHTML = "";
+
+    if (!data.events.length) {
+      list.innerHTML = `<div class="drilldown-empty">No events in this category.</div>`;
+    } else {
+      // Sort events by start time ascending
+      const sorted = [...data.events].sort((a, b) =>
+        new Date(a.start.dateTime) - new Date(b.start.dateTime)
+      );
+      for (const ev of sorted) {
+        const mins = durationMinutes(ev);
+        const planned = isPlanned(ev);
+        const row = document.createElement("div");
+        row.className = "event-row" + (planned ? " is-planned" : "");
+        row.style.setProperty("--cat-color", data.hex);
+        row.innerHTML = `
+          <span class="event-badge"></span>
+          <span class="event-title">${esc(cleanTitle(ev.summary, id))}</span>
+          <span class="event-date">${fmtDate(ev.start.dateTime)}</span>
+          <span class="event-time">${fmtTime(ev.start.dateTime)} → ${fmtTime(ev.end.dateTime)}</span>
+          <span class="status-badge ${planned ? "badge-planned" : "badge-results"}">${planned ? "Planned" : "Results"}</span>
+          <span class="event-duration">${fmtDuration(mins)}</span>
+        `;
+        list.appendChild(row);
+      }
+    }
+
+    section.classList.remove("hidden");
+    section.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  /* =====================================================
+     UI HELPERS
+  ===================================================== */
+
+  function showLoading()  {
+    document.getElementById("loading").classList.remove("hidden");
+    document.getElementById("dashboard").classList.add("hidden");
+  }
+  function hideLoading()  { document.getElementById("loading").classList.add("hidden"); }
+
+  function showError(msg) {
+    document.getElementById("error-message").textContent = msg;
+    document.getElementById("error-banner").classList.remove("hidden");
+  }
+  function hideError() { document.getElementById("error-banner").classList.add("hidden"); }
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  /* =====================================================
+     MAIN LOAD CYCLE
+  ===================================================== */
+
+  async function loadData() {
+    hideError();
+    showLoading();
+    state.activeDrilldown = null;
+
+    const { from, to } = getDateRange(state.rangeType);
+    state.dateFrom = from;
+    state.dateTo   = to;
+
+    document.getElementById("date-display").textContent = formatDateDisplay(from, to);
+    document.getElementById("drilldown-section").classList.add("hidden");
+
+    try {
+      const events = await fetchAllEvents(from, to);
+      state.allEvents = events;
+      const filtered = filterByMode(events, state.viewMode);
+      state.sleepEvents   = filtered.filter(isSleep);
+      state.categoryData  = processEvents(filtered.filter(e => !isSleep(e)));
+      if (new URLSearchParams(location.search).get("debug")) {
+        renderDebugPanel(filtered.filter(e => !isSleep(e)));
+      }
+
+      hideLoading();
+      const dash = document.getElementById("dashboard");
+      dash.classList.remove("hidden");
+
+      if (state.categoryData.size === 0) {
+        document.getElementById("empty-state").classList.remove("hidden");
+        document.getElementById("summary-row").classList.add("hidden");
+        document.getElementById("chart-section").classList.add("hidden");
+        document.getElementById("category-cards").classList.add("hidden");
+        document.getElementById("breakdown-section").classList.add("hidden");
+      } else {
+        document.getElementById("empty-state").classList.add("hidden");
+        document.getElementById("summary-row").classList.remove("hidden");
+        document.getElementById("chart-section").classList.remove("hidden");
+        document.getElementById("category-cards").classList.remove("hidden");
+        document.getElementById("breakdown-section").classList.remove("hidden");
+        renderSummary();
+        renderDonutChart();
+        renderCategoryCards();
+        renderBreakdownTable();
+        renderSleepSection();
+      }
+    } catch (err) {
+      hideLoading();
+      showError(err.message || "Failed to fetch calendar events.");
+      document.getElementById("dashboard").classList.remove("hidden");
+    }
+  }
+
+  /* =====================================================
+     EVENT HANDLERS
+  ===================================================== */
+
+  function onCategoryClick(id) {
+    if (state.activeDrilldown === id) {
+      // Collapse
+      state.activeDrilldown = null;
+      document.getElementById("drilldown-section").classList.add("hidden");
+    } else {
+      state.activeDrilldown = id;
+      renderDrilldown(id);
+    }
+    // Sync active state on cards and rows
+    document.querySelectorAll(".category-card").forEach(el => {
+      el.classList.toggle("active", el.dataset.catId === state.activeDrilldown);
+    });
+    document.querySelectorAll("#breakdown-tbody tr").forEach(el => {
+      el.classList.toggle("active-row", el.dataset.catId === state.activeDrilldown);
+    });
+  }
+
+  /* =====================================================
+     SETUP SCREEN LOGIC
+  ===================================================== */
+
+  function updateGeneratedUrl() {
+    const key = document.getElementById("setup-key").value.trim();
+    const cal = document.getElementById("setup-cal").value.trim();
+    const urlEl = document.getElementById("generated-url");
+    if (!key || !cal) {
+      urlEl.textContent = "";
+      urlEl.removeAttribute("href");
+      return;
+    }
+    const url = `${location.origin}${location.pathname}?key=${encodeURIComponent(key)}&cal=${encodeURIComponent(cal)}`;
+    urlEl.textContent = url;
+    urlEl.href = url;
+  }
+
+  /* =====================================================
+     INIT
+  ===================================================== */
+
+  function init() {
+    const params = new URLSearchParams(location.search);
+    const key = params.get("key");
+    const cal = params.get("cal");
+
+    if (!key || !cal) {
+      document.getElementById("setup-screen").classList.remove("hidden");
+
+      // Setup screen logic
+      document.getElementById("setup-key").addEventListener("input", updateGeneratedUrl);
+      document.getElementById("setup-cal").addEventListener("input", updateGeneratedUrl);
+      document.getElementById("btn-copy").addEventListener("click", () => {
+        const urlEl = document.getElementById("generated-url");
+        const text = urlEl.textContent;
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = document.getElementById("btn-copy");
+          btn.textContent = "Copied!";
+          setTimeout(() => btn.textContent = "Copy", 1800);
+        });
+      });
+      return;
+    }
+
+    state.apiKey     = key;
+    state.calendarId = cal;
+
+    document.getElementById("app").classList.remove("hidden");
+
+    // Range selection (shared logic)
+    const dropdown    = document.getElementById("range-dropdown");
+    const btnMore     = document.getElementById("btn-more-ranges");
+    const btnToday    = document.querySelector(".btn-range[data-range='today']");
+    const btnThisWeek = document.querySelector(".btn-range[data-range='thisweek']");
+
+    // Ranges shown as top-level buttons (not in the dropdown)
+    const TOP_LEVEL = new Set(["today", "thisweek"]);
+
+    const RANGE_LABELS = {
+      "today": "Today", "1": "Yesterday", "3": "Last 3 Days", "7": "Last 7 Days",
+      "30": "Last 30 Days", "tomorrow": "Tomorrow",
+      "next3": "Next 3 Days", "next7": "Next 7 Days", "custom": "Custom",
+    };
+
+    function selectRange(range) {
+      state.rangeType = range;
+      dropdown.classList.add("hidden");
+
+      // Reset all top-level buttons
+      btnToday.classList.remove("active");
+      btnThisWeek.classList.remove("active");
+      btnMore.classList.remove("active");
+
+      if (range === "today") {
+        btnToday.classList.add("active");
+        btnMore.textContent = "More ▾";
+      } else if (range === "thisweek") {
+        btnThisWeek.classList.add("active");
+        btnMore.textContent = "More ▾";
+      } else {
+        btnMore.classList.add("active");
+        btnMore.textContent = `${RANGE_LABELS[range] || range} ▾`;
+      }
+
+      // Sync dropdown item active state
+      document.querySelectorAll(".btn-range-dd").forEach(b => {
+        b.classList.toggle("active", b.dataset.range === range);
+      });
+
+      if (range === "custom") {
+        document.getElementById("custom-pickers").classList.remove("hidden");
+      } else {
+        document.getElementById("custom-pickers").classList.add("hidden");
+        loadData();
+      }
+    }
+
+    // Top-level buttons
+    btnToday.addEventListener("click", () => selectRange("today"));
+    btnThisWeek.addEventListener("click", () => selectRange("thisweek"));
+
+    // More ▾ toggle
+    btnMore.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle("hidden");
+    });
+
+    // Dropdown items
+    document.querySelectorAll(".btn-range-dd").forEach(btn => {
+      btn.addEventListener("click", () => selectRange(btn.dataset.range));
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener("click", () => dropdown.classList.add("hidden"));
+
+    // Custom date apply
+    document.getElementById("btn-apply-custom").addEventListener("click", () => {
+      const fromStr = document.getElementById("date-from").value;
+      const toStr   = document.getElementById("date-to").value;
+      if (!fromStr || !toStr) return;
+
+      const [fy, fm, fd] = fromStr.split("-").map(Number);
+      const [ty, tm, td] = toStr.split("-").map(Number);
+      state.dateFrom = new Date(fy, fm - 1, fd, 0, 0, 0);
+      state.dateTo   = new Date(ty, tm - 1, td, 23, 59, 59);
+
+      if (state.dateFrom > state.dateTo) {
+        showError("Start date must be before end date.");
+        return;
+      }
+      loadData();
+    });
+
+    // View mode toggle
+    document.querySelectorAll(".btn-view").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.viewMode = btn.dataset.view;
+        document.querySelectorAll(".btn-view").forEach(b => {
+          b.classList.remove("active-all", "active-results", "active-planned");
+        });
+        btn.classList.add(`active-${state.viewMode}`);
+        state.categoryData = processEvents(filterByMode(state.allEvents, state.viewMode));
+        state.activeDrilldown = null;
+        document.getElementById("drilldown-section").classList.add("hidden");
+        const reFiltered = filterByMode(state.allEvents, state.viewMode);
+        state.sleepEvents  = reFiltered.filter(isSleep);
+        state.categoryData = processEvents(reFiltered.filter(e => !isSleep(e)));
+        renderSummary();
+        renderDonutChart();
+        renderCategoryCards();
+        renderBreakdownTable();
+        renderSleepSection();
+      });
+    });
+
+    // Table header sorting
+    document.querySelectorAll("thead th[data-col]").forEach(th => {
+      th.addEventListener("click", () => {
+        const col = th.dataset.col;
+        if (state.sortCol === col) {
+          state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
+        } else {
+          state.sortCol = col;
+          state.sortDir = "desc";
+        }
+        renderBreakdownTable();
+        renderCategoryCards();
+      });
+    });
+
+    // Drill-down close
+    document.getElementById("btn-drilldown-close").addEventListener("click", () => {
+      state.activeDrilldown = null;
+      document.getElementById("drilldown-section").classList.add("hidden");
+      document.querySelectorAll(".category-card, #breakdown-tbody tr").forEach(el => {
+        el.classList.remove("active", "active-row");
+      });
+    });
+
+    // Sleep section expand/collapse
+    document.getElementById("sleep-header").addEventListener("click", () => {
+      const section = document.getElementById("sleep-section");
+      const body    = document.getElementById("sleep-body");
+      const isOpen  = section.classList.toggle("expanded");
+      body.classList.toggle("hidden", !isOpen);
+    });
+
+    // Error dismiss
+    document.getElementById("btn-dismiss-error").addEventListener("click", hideError);
+
+    // Initial load — use selectRange so button labels/state are set correctly
+    selectRange(DEFAULT_RANGE);
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
