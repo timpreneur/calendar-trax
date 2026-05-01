@@ -546,6 +546,39 @@
     }
 
     /* =====================================================
+       TYPE SECTION TABS
+    ===================================================== */
+    #type-section {
+      margin-bottom: 28px;
+    }
+    .type-tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .type-tab {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 8px 16px;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      margin-bottom: -1px;
+      font-family: var(--font);
+      transition: color var(--transition), border-color var(--transition);
+    }
+    .type-tab:hover { color: var(--text-primary); }
+    .type-tab.active {
+      color: var(--text-primary);
+      border-bottom-color: var(--accent, #7986CB);
+    }
+
+    /* =====================================================
        CATEGORY CARDS
     ===================================================== */
     #category-cards {
@@ -620,6 +653,181 @@
     .card-sessions {
       font-size: 0.75rem;
       color: var(--text-muted);
+    }
+    .card-secondary {
+      margin-top: 8px;
+      padding-top: 7px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sec-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+    }
+    .sec-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .sec-label {
+      flex: 1;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .sec-hours {
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .group-donut-wrap {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 8px 0 16px;
+    }
+    @media (max-width: 600px) {
+      .group-donut-wrap { flex-direction: column; gap: 20px; }
+    }
+
+    /* =====================================================
+       GROUP SUMMARY
+    ===================================================== */
+    #group-section {
+      margin-bottom: 28px;
+    }
+    #group-section h2 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    #group-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .group-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--group-color, #555);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: background var(--transition), box-shadow var(--transition);
+    }
+    .group-card:hover { background: var(--bg-card-hover); }
+    .group-card.active { box-shadow: 0 0 0 2px var(--group-color, #555); }
+    .group-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .group-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .group-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--group-color, #555);
+      flex-shrink: 0;
+    }
+    .group-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .group-total {
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+    }
+    .group-sessions {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .group-stacked-bar {
+      display: flex;
+      height: 8px;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      gap: 1px;
+    }
+    .group-bar-seg {
+      transition: opacity var(--transition);
+      min-width: 4px;
+    }
+    .group-bar-seg:hover { opacity: 0.75; cursor: default; }
+    .group-type-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .group-type-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.75rem;
+    }
+    .group-type-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .group-type-label {
+      flex: 1;
+      color: var(--text-muted);
+    }
+    .group-type-hours {
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .group-type-pct {
+      color: var(--text-muted);
+      min-width: 32px;
+      text-align: right;
+    }
+    .drilldown-group-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+    .drilldown-group-header:first-child { border-top: none; }
+    .drilldown-group-swatch {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .drilldown-group-total {
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-secondary);
     }
 
     /* =====================================================
@@ -892,44 +1100,8 @@
     }
 
     /* =====================================================
-       VIZ SECTION — shared scaffolding
+       VIZ CONTENT
     ===================================================== */
-    #viz-section {
-      margin-bottom: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .viz-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-    .viz-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      cursor: pointer;
-      user-select: none;
-      transition: background var(--transition);
-    }
-    .viz-card-header:hover { background: var(--bg-card-hover); }
-    .viz-card-title {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-    }
-    .viz-card-chevron {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      transition: transform var(--transition);
-    }
-    .viz-card.expanded .viz-card-chevron { transform: rotate(180deg); }
-    .viz-card-body { border-top: 1px solid var(--border); padding: 16px 20px; }
-    .viz-card-body.hidden { display: none; }
     .viz-note {
       color: var(--text-muted);
       font-size: 0.85rem;
@@ -1227,63 +1399,99 @@
         <div class="chart-legend" id="chart-legend"></div>
       </div>
 
-      <!-- VIZ SECTION -->
-      <div id="viz-section" class="hidden">
+      <!-- TYPE SECTION (tabbed) -->
+      <div id="type-section" class="hidden">
+        <div class="type-tab-bar">
+          <button class="type-tab active" data-type-tab="grid">By Type</button>
+          <button class="type-tab" data-type-tab="table">Table</button>
+          <button class="type-tab" data-type-tab="timeline">Day Timeline</button>
+          <button class="type-tab" data-type-tab="bars">Daily Hours</button>
+          <button class="type-tab" data-type-tab="heatmap">Heatmap</button>
+        </div>
 
-        <!-- Day Timeline Strips -->
-        <div class="viz-card expanded" id="viz-card-timeline">
-          <div class="viz-card-header" data-viz="timeline">
-            <span class="viz-card-title">Day Timeline</span>
-            <span class="viz-card-chevron">▼</span>
-          </div>
-          <div class="viz-card-body" id="viz-body-timeline">
-            <div id="viz-timeline-content"></div>
+        <!-- Tab: Grid -->
+        <div id="tab-grid">
+          <div id="category-cards"></div>
+        </div>
+
+        <!-- Tab: Table -->
+        <div id="tab-table" class="hidden">
+          <div id="breakdown-section">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-col="category">Category <span class="sort-icon" id="sort-icon-category"></span></th>
+                    <th data-col="hours" class="active-sort">Total Hours <span class="sort-icon" id="sort-icon-hours">▼</span></th>
+                    <th data-col="percent">% of Total <span class="sort-icon" id="sort-icon-percent"></span></th>
+                    <th data-col="sessions">Sessions <span class="sort-icon" id="sort-icon-sessions"></span></th>
+                    <th data-col="avg">Avg Session <span class="sort-icon" id="sort-icon-avg"></span></th>
+                  </tr>
+                </thead>
+                <tbody id="breakdown-tbody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        <!-- Daily Stacked Bar Chart -->
-        <div class="viz-card expanded" id="viz-card-bars">
-          <div class="viz-card-header" data-viz="bars">
-            <span class="viz-card-title">Daily Hours</span>
-            <span class="viz-card-chevron">▼</span>
-          </div>
-          <div class="viz-card-body" id="viz-body-bars">
-            <div id="viz-bars-content"></div>
+        <!-- Tab: Day Timeline -->
+        <div id="tab-timeline" class="hidden">
+          <div id="viz-timeline-content"></div>
+        </div>
+
+        <!-- Tab: Daily Hours -->
+        <div id="tab-bars" class="hidden">
+          <div id="viz-bars-content"></div>
+        </div>
+
+        <!-- Tab: Heatmap -->
+        <div id="tab-heatmap" class="hidden">
+          <div id="viz-heatmap-content"></div>
+        </div>
+      </div>
+
+      <!-- GROUP SECTION (tabbed) -->
+      <div id="group-section" class="hidden">
+        <div class="type-tab-bar">
+          <button class="type-tab active" data-group-tab="cards">By Group</button>
+          <button class="type-tab" data-group-tab="donut">Donut</button>
+          <button class="type-tab" data-group-tab="timeline">Day Timeline</button>
+          <button class="type-tab" data-group-tab="bars">Daily Hours</button>
+          <button class="type-tab" data-group-tab="heatmap">Heatmap</button>
+        </div>
+
+        <!-- Tab: Cards -->
+        <div id="group-tab-cards">
+          <div id="group-cards"></div>
+        </div>
+
+        <!-- Tab: Donut -->
+        <div id="group-tab-donut" class="hidden">
+          <div class="group-donut-wrap">
+            <div class="chart-left">
+              <svg id="group-donut-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"></svg>
+              <div class="donut-center">
+                <span class="donut-total" id="group-donut-total">—</span>
+                <span class="donut-label" id="group-donut-sublabel">total</span>
+              </div>
+            </div>
+            <div class="chart-legend" id="group-donut-legend"></div>
           </div>
         </div>
 
-        <!-- Heatmap -->
-        <div class="viz-card expanded" id="viz-card-heatmap">
-          <div class="viz-card-header" data-viz="heatmap">
-            <span class="viz-card-title">Time-of-Day Heatmap</span>
-            <span class="viz-card-chevron">▼</span>
-          </div>
-          <div class="viz-card-body" id="viz-body-heatmap">
-            <div id="viz-heatmap-content"></div>
-          </div>
+        <!-- Tab: Timeline -->
+        <div id="group-tab-timeline" class="hidden">
+          <div id="group-viz-timeline-content"></div>
         </div>
 
-      </div><!-- /#viz-section -->
+        <!-- Tab: Daily Hours -->
+        <div id="group-tab-bars" class="hidden">
+          <div id="group-viz-bars-content"></div>
+        </div>
 
-      <!-- CATEGORY CARDS -->
-      <div id="category-cards"></div>
-
-      <!-- BREAKDOWN TABLE -->
-      <div id="breakdown-section">
-        <h2>Breakdown</h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th data-col="category">Category <span class="sort-icon" id="sort-icon-category"></span></th>
-                <th data-col="hours" class="active-sort">Total Hours <span class="sort-icon" id="sort-icon-hours">▼</span></th>
-                <th data-col="percent">% of Total <span class="sort-icon" id="sort-icon-percent"></span></th>
-                <th data-col="sessions">Sessions <span class="sort-icon" id="sort-icon-sessions"></span></th>
-                <th data-col="avg">Avg Session <span class="sort-icon" id="sort-icon-avg"></span></th>
-              </tr>
-            </thead>
-            <tbody id="breakdown-tbody"></tbody>
-          </table>
+        <!-- Tab: Heatmap -->
+        <div id="group-tab-heatmap" class="hidden">
+          <div id="group-viz-heatmap-content"></div>
         </div>
       </div>
 
@@ -1335,6 +1543,7 @@
     sortCol: "hours",
     sortDir: "desc",
     activeDrilldown: null,
+    activeGroupDrilldown: null,
     viewMode: "all", // "all" | "results" | "planned"
   };
 
@@ -1451,18 +1660,29 @@
 
   function getCategory(event) {
     const title = event.summary || "";
-    const match = title.match(/#([a-zA-Z][a-zA-Z0-9_-]*)/);
-    if (match) {
-      const tag = match[0].toLowerCase();
-      return { id: tag, label: tagToLabel(tag), hex: getTagColor(tag) };
+    const matches = [...title.matchAll(/#([a-zA-Z][a-zA-Z0-9_-]*)/g)];
+    if (matches.length) {
+      const primaryTag = matches[0][0].toLowerCase();
+      const primary = { id: primaryTag, label: tagToLabel(primaryTag), hex: getTagColor(primaryTag) };
+      if (matches.length > 1) {
+        const secTag = matches[1][0].toLowerCase();
+        primary.secondary = { id: secTag, label: tagToLabel(secTag), hex: getTagColor(secTag) };
+      }
+      return primary;
     }
     return { id: "uncategorized", ...UNCATEGORIZED };
   }
 
-  // Strip the hashtag from the event title for clean display
-  function cleanTitle(summary, tag) {
-    if (tag === "uncategorized") return summary || "(no title)";
-    return (summary || "").replace(new RegExp(tag, "i"), "").trim() || "(no title)";
+  // Returns secondary (group) tag info, falling back to primary if none
+  function getGroupCategory(ev) {
+    const cat = getCategory(ev);
+    if (cat.secondary) return { id: cat.secondary.id, label: cat.secondary.label, hex: cat.secondary.hex };
+    return cat;
+  }
+
+  // Strip all hashtags from the event title for clean display
+  function cleanTitle(summary) {
+    return (summary || "").replace(/#[a-zA-Z][a-zA-Z0-9_-]*/g, "").trim() || "(no title)";
   }
 
   function durationMinutes(event) {
@@ -1540,7 +1760,7 @@
     for (const event of events) {
       const cat = getCategory(event);
       if (!map.has(cat.id)) {
-        map.set(cat.id, { label: cat.label, hex: cat.hex, minutes: 0, sessions: 0, events: [] });
+        map.set(cat.id, { label: cat.label, hex: cat.hex, minutes: 0, sessions: 0, events: [], secondary: new Map() });
       }
       const entry = map.get(cat.id);
       const mins = durationMinutes(event);
@@ -1548,6 +1768,15 @@
         entry.minutes += mins;
         entry.sessions += 1;
         entry.events.push(event);
+        if (cat.secondary) {
+          const sec = cat.secondary;
+          if (!entry.secondary.has(sec.id)) {
+            entry.secondary.set(sec.id, { label: sec.label, hex: sec.hex, minutes: 0, sessions: 0 });
+          }
+          const secEntry = entry.secondary.get(sec.id);
+          secEntry.minutes += mins;
+          secEntry.sessions += 1;
+        }
       }
     }
     return map;
@@ -1690,6 +1919,86 @@
     document.getElementById("donut-sublabel").textContent = modeLabel;
   }
 
+  function renderGroupDonut() {
+    const svg    = document.getElementById("group-donut-svg");
+    const legend = document.getElementById("group-donut-legend");
+    svg.innerHTML = "";
+    legend.innerHTML = "";
+
+    // Build group totals (same rollup as renderGroupSummary)
+    const groupMap = new Map();
+    for (const [, catData] of state.categoryData) {
+      for (const [secId, secData] of catData.secondary) {
+        if (!groupMap.has(secId)) {
+          groupMap.set(secId, { label: secData.label, hex: secData.hex, minutes: 0 });
+        }
+        groupMap.get(secId).minutes += secData.minutes;
+      }
+    }
+
+    const entries = [...groupMap.entries()].sort(([, a], [, b]) => b.minutes - a.minutes);
+    const totalMins = entries.reduce((s, [, g]) => s + g.minutes, 0);
+    if (!totalMins) return;
+
+    const cx = 100, cy = 100, r = 72, strokeWidth = 32;
+    const circumference = 2 * Math.PI * r;
+    const gap = 2;
+    let offset = 0;
+
+    // Background track
+    const track = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    track.setAttribute("cx", cx); track.setAttribute("cy", cy); track.setAttribute("r", r);
+    track.setAttribute("fill", "none");
+    track.setAttribute("stroke", "rgba(255,255,255,0.05)");
+    track.setAttribute("stroke-width", strokeWidth);
+    svg.appendChild(track);
+
+    for (const [groupId, g] of entries) {
+      const pct     = g.minutes / totalMins;
+      const dashLen = Math.max(0, pct * circumference - gap);
+
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", cx); circle.setAttribute("cy", cy); circle.setAttribute("r", r);
+      circle.setAttribute("fill", "none");
+      circle.setAttribute("stroke", g.hex);
+      circle.setAttribute("stroke-width", strokeWidth);
+      circle.setAttribute("stroke-dasharray", `${dashLen} ${circumference}`);
+      circle.setAttribute("stroke-dashoffset", -(offset));
+      circle.setAttribute("stroke-linecap", "butt");
+      circle.style.transition = "stroke-dasharray 600ms cubic-bezier(0.4,0,0.2,1)";
+      circle.style.cursor = "pointer";
+      circle.addEventListener("click", () => {
+        // Switch to cards tab and open drilldown
+        document.querySelectorAll("[data-group-tab]").forEach(b => b.classList.remove("active"));
+        document.querySelector("[data-group-tab='cards']").classList.add("active");
+        const GROUP_TABS = ["cards", "donut", "timeline", "bars", "heatmap"];
+        GROUP_TABS.forEach(t => document.getElementById(`group-tab-${t}`).classList.toggle("hidden", t !== "cards"));
+        // Trigger drilldown after a short delay so cards are visible
+        setTimeout(() => renderGroupDrilldown(groupId), 50);
+      });
+      svg.appendChild(circle);
+      offset += pct * circumference;
+
+      // Legend row
+      const pctStr = (pct * 100).toFixed(0);
+      const row = document.createElement("div");
+      row.className = "legend-row";
+      row.innerHTML = `
+        <span class="legend-dot" style="background:${g.hex}"></span>
+        <span class="legend-label">${esc(g.label)}</span>
+        <span class="legend-hours">${fmtDuration(g.minutes)}</span>
+        <span class="legend-pct">${pctStr}%</span>
+      `;
+      row.style.cursor = "pointer";
+      row.addEventListener("click", () => renderGroupDrilldown(groupId));
+      legend.appendChild(row);
+    }
+
+    document.getElementById("group-donut-total").textContent = fmtDuration(totalMins);
+    document.getElementById("group-donut-sublabel").textContent =
+      state.viewMode === "all" ? "total" : state.viewMode;
+  }
+
   /* =====================================================
      RENDER — SUMMARY
   ===================================================== */
@@ -1782,6 +2091,18 @@
       card.className = "category-card" + (state.activeDrilldown === id ? " active" : "");
       card.dataset.catId = id;
       card.style.setProperty("--cat-color", data.hex);
+      let secHtml = "";
+      if (data.secondary && data.secondary.size > 0) {
+        const secEntries = [...data.secondary.entries()].sort(([, a], [, b]) => b.minutes - a.minutes);
+        secHtml = `<div class="card-secondary">` +
+          secEntries.map(([, s]) => `
+            <div class="sec-row">
+              <span class="sec-dot" style="background:${s.hex}"></span>
+              <span class="sec-label">${esc(s.label)}</span>
+              <span class="sec-hours">${fmtDuration(s.minutes)}</span>
+            </div>`).join("") +
+          `</div>`;
+      }
       card.innerHTML = `
         <div class="card-header">
           <span class="color-dot"></span>
@@ -1791,6 +2112,7 @@
         <div class="card-percent">${pct}% of total</div>
         <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
         <div class="card-sessions">${data.sessions} session${data.sessions !== 1 ? "s" : ""}</div>
+        ${secHtml}
       `;
       card.addEventListener("click", () => onCategoryClick(id));
       container.appendChild(card);
@@ -1872,7 +2194,7 @@
         row.style.setProperty("--cat-color", data.hex);
         row.innerHTML = `
           <span class="event-badge"></span>
-          <span class="event-title">${esc(cleanTitle(ev.summary, id))}</span>
+          <span class="event-title">${esc(cleanTitle(ev.summary))}</span>
           <span class="event-date">${fmtDate(ev.start.dateTime)}</span>
           <span class="event-time">${fmtTime(ev.start.dateTime)} → ${fmtTime(ev.end.dateTime)}</span>
           <span class="status-badge ${planned ? "badge-planned" : "badge-results"}">${planned ? "Planned" : "Results"}</span>
@@ -1974,8 +2296,8 @@
     };
   }
 
-  function renderTimelineStrips() {
-    const container = document.getElementById('viz-timeline-content');
+  function renderTimelineStrips(containerId = 'viz-timeline-content', getCatFn = getCategory) {
+    const container = document.getElementById(containerId);
     container.innerHTML = '';
     const allFiltered = filterByMode(state.allEvents, state.viewMode);
     if (!allFiltered.length) {
@@ -2015,7 +2337,7 @@
       for (const ev of events) {
         const geom = eventToTimelineGeom(ev);
         if (!geom) continue;
-        const cat   = isSleep(ev) ? { hex: '#3F51B5' } : getCategory(ev);
+        const cat   = isSleep(ev) ? { hex: '#3F51B5' } : getCatFn(ev);
         const seg   = document.createElement('div');
         seg.className = 'timeline-segment';
         seg.style.left       = `${geom.left}%`;
@@ -2039,8 +2361,8 @@
 
   const MAX_BAR_HEIGHT = 140;
 
-  function renderDailyBars() {
-    const container = document.getElementById('viz-bars-content');
+  function renderDailyBars(containerId = 'viz-bars-content', getCatFn = getCategory) {
+    const container = document.getElementById(containerId);
     container.innerHTML = '';
     if (numDaysInRange(state.dateFrom, state.dateTo) <= 1) {
       container.innerHTML = '<p class="viz-note">Select a multi-day range to see the daily bar chart.</p>';
@@ -2063,7 +2385,7 @@
 
     const catsSeen = new Map();
     for (const evs of byDate.values())
-      for (const ev of evs) { const c = getCategory(ev); if (!catsSeen.has(c.id)) catsSeen.set(c.id, c); }
+      for (const ev of evs) { const c = getCatFn(ev); if (!catsSeen.has(c.id)) catsSeen.set(c.id, c); }
 
     const wrap  = document.createElement('div'); wrap.className = 'bar-chart-wrap';
     const bars  = document.createElement('div'); bars.className = 'bar-chart-bars';
@@ -2072,7 +2394,7 @@
       const evs    = byDate.get(dateKey) || [];
       const catMin = new Map();
       for (const ev of evs) {
-        const c = getCategory(ev);
+        const c = getCatFn(ev);
         catMin.set(c.id, (catMin.get(c.id) || 0) + durationMinutes(ev));
       }
       const dayTotal = [...catMin.values()].reduce((s, m) => s + m, 0);
@@ -2111,8 +2433,8 @@
   const HM_START_HOUR = 5;
   const HM_END_HOUR   = 23;
 
-  function renderHeatmap() {
-    const container = document.getElementById('viz-heatmap-content');
+  function renderHeatmap(containerId = 'viz-heatmap-content', getCatFn = getCategory) {
+    const container = document.getElementById(containerId);
     container.innerHTML = '';
     if (numDaysInRange(state.dateFrom, state.dateTo) < 2) {
       container.innerHTML = '<p class="viz-note">Select a multi-day range to see the heatmap.</p>';
@@ -2133,7 +2455,7 @@
       for (const ev of (byDate.get(dates[di]) || [])) {
         const startDt = new Date(ev.start.dateTime);
         const endDt   = new Date(ev.end.dateTime);
-        const cat     = getCategory(ev);
+        const cat     = getCatFn(ev);
         for (let h = HM_START_HOUR; h <= HM_END_HOUR; h++) {
           const hStart = h * 60, hEnd = (h + 1) * 60;
           const eStart = startDt.getHours() * 60 + startDt.getMinutes();
@@ -2188,11 +2510,183 @@
      RENDER — VIZ SECTION ORCHESTRATOR
   ===================================================== */
 
+  /* =====================================================
+     RENDER — ENTITY SUMMARY
+  ===================================================== */
+
+  function renderGroupSummary() {
+    const section   = document.getElementById("group-section");
+    const container = document.getElementById("group-cards");
+    container.innerHTML = "";
+
+    // Roll up all secondary tags, tracking per-type breakdown
+    const groupMap = new Map();
+    for (const [catId, catData] of state.categoryData) {
+      for (const [secId, secData] of catData.secondary) {
+        if (!groupMap.has(secId)) {
+          groupMap.set(secId, { label: secData.label, hex: secData.hex, minutes: 0, sessions: 0, types: new Map() });
+        }
+        const g = groupMap.get(secId);
+        g.minutes  += secData.minutes;
+        g.sessions += secData.sessions;
+        if (!g.types.has(catId)) {
+          g.types.set(catId, { label: catData.label, hex: catData.hex, minutes: 0 });
+        }
+        g.types.get(catId).minutes += secData.minutes;
+      }
+    }
+
+    if (groupMap.size === 0) {
+      section.classList.add("hidden");
+      return;
+    }
+
+    section.classList.remove("hidden");
+    const sorted = [...groupMap.entries()].sort(([, a], [, b]) => b.minutes - a.minutes);
+    for (const [groupId, g] of sorted) {
+      // Build type entries sorted by minutes desc
+      const typeEntries = [...g.types.entries()].sort(([, a], [, b]) => b.minutes - a.minutes);
+
+      // Stacked bar segments
+      const barSegs = typeEntries.map(([, t]) => {
+        const pct = Math.round(t.minutes / g.minutes * 100);
+        return `<div class="group-bar-seg" style="flex:${t.minutes};background:${t.hex}" title="${esc(t.label)}: ${fmtDuration(t.minutes)} (${pct}%)"></div>`;
+      }).join("");
+
+      // Type breakdown rows
+      const typeRows = typeEntries.map(([, t]) => {
+        const pct = Math.round(t.minutes / g.minutes * 100);
+        return `
+          <div class="group-type-row">
+            <span class="group-type-dot" style="background:${t.hex}"></span>
+            <span class="group-type-label">${esc(t.label)}</span>
+            <span class="group-type-hours">${fmtDuration(t.minutes)}</span>
+            <span class="group-type-pct">${pct}%</span>
+          </div>`;
+      }).join("");
+
+      const card = document.createElement("div");
+      card.className = "group-card" + (state.activeGroupDrilldown === groupId ? " active" : "");
+      card.dataset.groupId = groupId;
+      card.style.setProperty("--group-color", g.hex);
+      card.innerHTML = `
+        <div class="group-card-header">
+          <div class="group-card-title">
+            <span class="group-dot"></span>
+            <span class="group-name">${esc(g.label)}</span>
+            <span class="group-sessions">${g.sessions} session${g.sessions !== 1 ? "s" : ""}</span>
+          </div>
+          <span class="group-total">${fmtDuration(g.minutes)}</span>
+        </div>
+        <div class="group-stacked-bar">${barSegs}</div>
+        <div class="group-type-breakdown">${typeRows}</div>
+      `;
+      card.addEventListener("click", () => {
+        if (state.activeGroupDrilldown === groupId) {
+          // Collapse
+          state.activeGroupDrilldown = null;
+          document.getElementById("drilldown-section").classList.add("hidden");
+          card.classList.remove("active");
+        } else {
+          // Close any primary category drilldown
+          state.activeDrilldown = null;
+          document.querySelectorAll(".category-card, #breakdown-tbody tr").forEach(el => {
+            el.classList.remove("active", "active-row");
+          });
+          // Open entity drilldown
+          state.activeGroupDrilldown = groupId;
+          document.querySelectorAll(".group-card").forEach(el => el.classList.remove("active"));
+          card.classList.add("active");
+          renderGroupDrilldown(groupId);
+        }
+      });
+      container.appendChild(card);
+    }
+  }
+
+  /* =====================================================
+     RENDER — ENTITY DRILL-DOWN
+  ===================================================== */
+
+  function renderGroupDrilldown(groupId) {
+    const section = document.getElementById("drilldown-section");
+    const list    = document.getElementById("drilldown-list");
+    const title   = document.getElementById("drilldown-title");
+
+    // Collect groups: one per primary category that contains this entity
+    let groupLabel = "";
+    let groupHex   = "#9E9E9E";
+    const groups = [];
+
+    for (const [, catData] of state.categoryData) {
+      const secEntry = catData.secondary.get(groupId);
+      if (!secEntry) continue;
+      if (!groupLabel) { groupLabel = secEntry.label; groupHex = secEntry.hex; }
+      const evs = catData.events.filter(ev => {
+        const c = getCategory(ev);
+        return c.secondary && c.secondary.id === groupId;
+      });
+      if (evs.length) groups.push({ catLabel: catData.label, catHex: catData.hex, events: evs });
+    }
+
+    title.textContent = `Events — ${groupLabel}`;
+    list.innerHTML = "";
+
+    if (!groups.length) {
+      list.innerHTML = `<div class="drilldown-empty">No events found.</div>`;
+    } else {
+      // Sort groups by total minutes descending
+      groups.sort((a, b) =>
+        b.events.reduce((s, e) => s + durationMinutes(e), 0) -
+        a.events.reduce((s, e) => s + durationMinutes(e), 0)
+      );
+      for (const group of groups) {
+        const totalMins = group.events.reduce((s, e) => s + durationMinutes(e), 0);
+        const hdr = document.createElement("div");
+        hdr.className = "drilldown-group-header";
+        hdr.innerHTML = `
+          <span class="drilldown-group-swatch" style="background:${group.catHex}"></span>
+          <span>${esc(group.catLabel)}</span>
+          <span class="drilldown-group-total">${fmtDuration(totalMins)}</span>
+        `;
+        list.appendChild(hdr);
+
+        const sorted = [...group.events].sort((a, b) =>
+          new Date(a.start.dateTime) - new Date(b.start.dateTime)
+        );
+        for (const ev of sorted) {
+          const mins = durationMinutes(ev);
+          const planned = isPlanned(ev);
+          const row = document.createElement("div");
+          row.className = "event-row" + (planned ? " is-planned" : "");
+          row.style.setProperty("--cat-color", group.catHex);
+          row.innerHTML = `
+            <span class="event-badge"></span>
+            <span class="event-title">${esc(cleanTitle(ev.summary))}</span>
+            <span class="event-date">${fmtDate(ev.start.dateTime)}</span>
+            <span class="event-time">${fmtTime(ev.start.dateTime)} → ${fmtTime(ev.end.dateTime)}</span>
+            <span class="status-badge ${planned ? "badge-planned" : "badge-results"}">${planned ? "Planned" : "Results"}</span>
+            <span class="event-duration">${fmtDuration(mins)}</span>
+          `;
+          list.appendChild(row);
+        }
+      }
+    }
+
+    section.classList.remove("hidden");
+    section.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
   function renderVizSection() {
-    document.getElementById('viz-section').classList.remove('hidden');
     renderTimelineStrips();
     renderDailyBars();
     renderHeatmap();
+  }
+
+  function renderGroupVizSection() {
+    renderTimelineStrips('group-viz-timeline-content', getGroupCategory);
+    renderDailyBars('group-viz-bars-content', getGroupCategory);
+    renderHeatmap('group-viz-heatmap-content', getGroupCategory);
   }
 
   /* =====================================================
@@ -2203,6 +2697,7 @@
     hideError();
     showLoading();
     state.activeDrilldown = null;
+    state.activeGroupDrilldown = null;
 
     const { from, to } = getDateRange(state.rangeType);
     state.dateFrom = from;
@@ -2229,18 +2724,19 @@
         document.getElementById("empty-state").classList.remove("hidden");
         document.getElementById("summary-row").classList.add("hidden");
         document.getElementById("chart-section").classList.add("hidden");
-        document.getElementById("viz-section").classList.add("hidden");
-        document.getElementById("category-cards").classList.add("hidden");
-        document.getElementById("breakdown-section").classList.add("hidden");
+        document.getElementById("type-section").classList.add("hidden");
+        document.getElementById("group-section").classList.add("hidden");
       } else {
         document.getElementById("empty-state").classList.add("hidden");
         document.getElementById("summary-row").classList.remove("hidden");
         document.getElementById("chart-section").classList.remove("hidden");
-        document.getElementById("category-cards").classList.remove("hidden");
-        document.getElementById("breakdown-section").classList.remove("hidden");
+        document.getElementById("type-section").classList.remove("hidden");
         renderSummary();
         renderDonutChart();
         renderCategoryCards();
+        renderGroupSummary();
+        renderGroupDonut();
+        renderGroupVizSection();
         renderBreakdownTable();
         renderSleepSection();
         renderVizSection();
@@ -2257,6 +2753,10 @@
   ===================================================== */
 
   function onCategoryClick(id) {
+    // Close any open entity drilldown
+    state.activeGroupDrilldown = null;
+    document.querySelectorAll(".group-card").forEach(el => el.classList.remove("active"));
+
     if (state.activeDrilldown === id) {
       // Collapse
       state.activeDrilldown = null;
@@ -2419,13 +2919,18 @@
         btn.classList.add(`active-${state.viewMode}`);
         state.categoryData = processEvents(filterByMode(state.allEvents, state.viewMode));
         state.activeDrilldown = null;
+        state.activeGroupDrilldown = null;
         document.getElementById("drilldown-section").classList.add("hidden");
+        document.querySelectorAll(".group-card").forEach(el => el.classList.remove("active"));
         const reFiltered = filterByMode(state.allEvents, state.viewMode);
         state.sleepEvents  = reFiltered.filter(isSleep);
         state.categoryData = processEvents(reFiltered.filter(e => !isSleep(e)));
         renderSummary();
         renderDonutChart();
         renderCategoryCards();
+        renderGroupSummary();
+        renderGroupDonut();
+        renderGroupVizSection();
         renderBreakdownTable();
         renderSleepSection();
         renderVizSection();
@@ -2450,10 +2955,12 @@
     // Drill-down close
     document.getElementById("btn-drilldown-close").addEventListener("click", () => {
       state.activeDrilldown = null;
+      state.activeGroupDrilldown = null;
       document.getElementById("drilldown-section").classList.add("hidden");
       document.querySelectorAll(".category-card, #breakdown-tbody tr").forEach(el => {
         el.classList.remove("active", "active-row");
       });
+      document.querySelectorAll(".group-card").forEach(el => el.classList.remove("active"));
     });
 
     // Sleep section expand/collapse
@@ -2464,16 +2971,32 @@
       body.classList.toggle("hidden", !isOpen);
     });
 
-    // Viz card expand/collapse
-    document.querySelectorAll(".viz-card-header").forEach(header => {
-      header.addEventListener("click", () => {
-        const card   = header.closest(".viz-card");
-        const body   = card.querySelector(".viz-card-body");
-        const isOpen = card.classList.toggle("expanded");
-        body.classList.toggle("hidden", !isOpen);
-        header.querySelector(".viz-card-chevron").textContent = isOpen ? "▼" : "▶";
+    // Group section tabs
+    const GROUP_TABS = ["cards", "donut", "timeline", "bars", "heatmap"];
+    document.querySelectorAll("[data-group-tab]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-group-tab]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.dataset.groupTab;
+        GROUP_TABS.forEach(t => {
+          document.getElementById(`group-tab-${t}`).classList.toggle("hidden", t !== tab);
+        });
       });
     });
+
+    // Type section tabs
+    const TYPE_TABS = ["grid", "table", "timeline", "bars", "heatmap"];
+    document.querySelectorAll(".type-tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".type-tab").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.dataset.typeTab;
+        TYPE_TABS.forEach(t => {
+          document.getElementById(`tab-${t}`).classList.toggle("hidden", t !== tab);
+        });
+      });
+    });
+
 
     // Error dismiss
     document.getElementById("btn-dismiss-error").addEventListener("click", hideError);

@@ -81,4 +81,4 @@ const SLEEP_TAG = "#sleep";
      "next3"    → Next 3 Days
      "next7"    → Next 7 Days
 ----------------------------------------------------- */
-const DEFAULT_RANGE = "7";
+const DEFAULT_RANGE = "today";
