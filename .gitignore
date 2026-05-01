@@ -1,0 +1,20 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Logs
+*.log
+
+# Claude Code local
+.claude/settings.local.json
+.claude/worktrees/
+
+# Local secrets / scratch (this app uses URL params, not env vars,
+# but ignore these by default in case anything is ever added)
+.env
+.env.local
+.env.*.local
