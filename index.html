@@ -15,20 +15,20 @@
        DESIGN TOKENS
     ===================================================== */
     :root {
-      --bg-base:        #0d0d1a;
-      --bg-surface:     #13131f;
-      --bg-card:        #1a1a2e;
-      --bg-card-hover:  #222236;
-      --bg-input:       #1e1e30;
-      --text-primary:   #e2e2f0;
-      --text-secondary: #9090b0;
-      --text-muted:     #5a5a78;
-      --accent:         #7c6af7;
-      --accent-dim:     rgba(124, 106, 247, 0.15);
-      --border:         rgba(255,255,255,0.07);
-      --border-hover:   rgba(255,255,255,0.14);
-      --shadow-sm:      0 2px 8px rgba(0,0,0,0.4);
-      --shadow-md:      0 4px 20px rgba(0,0,0,0.5);
+      --bg-base:        #f6f8f9;
+      --bg-surface:     #eef3f5;
+      --bg-card:        #ffffff;
+      --bg-card-hover:  #f0f7f8;
+      --bg-input:       #ffffff;
+      --text-primary:   #192b32;
+      --text-secondary: #61717a;
+      --text-muted:     #687c86;
+      --accent:         #087b91;
+      --accent-dim:     #eaf6f8;
+      --border:         #dbe3e7;
+      --border-hover:   #b9d6dd;
+      --shadow-sm:      0 1px 3px rgba(25,43,50,0.05);
+      --shadow-md:      0 8px 24px rgba(25,43,50,0.10);
       --radius-sm:      6px;
       --radius-md:      10px;
       --radius-lg:      16px;
@@ -174,7 +174,7 @@
       cursor: pointer;
       transition: background var(--transition);
     }
-    .btn-copy:hover { background: rgba(124,106,247,0.25); }
+    .btn-copy:hover { background: #dceff3; }
 
     /* =====================================================
        APP WRAPPER
@@ -303,7 +303,7 @@
       color: #33B679;
     }
     .btn-view.active-planned {
-      background: rgba(124, 106, 247, 0.12);
+      background: #eaf6f8;
       color: var(--accent);
     }
     .btn-view.active-all {
@@ -325,7 +325,7 @@
       padding: 7px 10px;
       font-size: 0.85rem;
       font-family: var(--font);
-      color-scheme: dark;
+      color-scheme: light;
       outline: none;
       cursor: pointer;
       transition: border-color var(--transition);
@@ -956,7 +956,7 @@
       letter-spacing: 0.04em;
     }
     .badge-planned {
-      background: rgba(124, 106, 247, 0.15);
+      background: #eaf6f8;
       color: var(--accent);
       border: 1px solid rgba(124, 106, 247, 0.3);
     }
@@ -1247,6 +1247,33 @@
       font-family: var(--font);
     }
     .btn-debug-close:hover { background: rgba(255,200,0,0.08); }
+
+    .type-tab-bar { flex-wrap: wrap; }
+    /* MyDay visual language: calm surfaces, teal controls, readable analytics. */
+    :root { --radius-sm: 9px; --radius-md: 12px; --radius-lg: 18px; color-scheme: light; }
+    #app { padding: 32px 40px 60px; }
+    .app-title { font-size: 1.8rem; color: var(--text-primary); }
+    .app-title::after { content: "."; color: var(--accent); }
+    #date-display { padding-left: 20px; border-left: 1px solid var(--border); color: var(--text-secondary); }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .view-toggle { padding: 4px; gap: 4px; background: #e8eef0; border: 0; border-radius: 12px; }
+    .btn-view { border: 0; border-radius: 9px; background: transparent; padding: 9px 18px; }
+    .btn-view.active-all, .btn-view.active-results, .btn-view.active-planned { background: white; color: var(--accent); box-shadow: var(--shadow-sm); }
+    .summary-card, .category-card, .group-card { box-shadow: none; }
+    .category-card:hover, .group-card:hover { transform: none; border-color: var(--border-hover); }
+    .summary-label { text-transform: none; letter-spacing: 0; font-size: .82rem; }
+    .summary-value { font-size: 1.8rem; font-weight: 650; }
+    .type-tab, [data-group-tab] { text-transform: none; letter-spacing: 0; font-size: .82rem; }
+    .badge-results { color: #167454; background: #eaf8f1; }
+    .badge-planned { color: #087b91; background: #eaf6f8; }
+    #error-message { color: #b42338; }
+    @media (max-width: 640px) {
+      #app { padding: 20px 16px 40px; }
+      .app-title { font-size: 1.5rem; }
+      #date-display { border: 0; padding-left: 0; }
+      .summary-value { font-size: 1.5rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation-duration: .01ms !important; } }
   </style>
 </head>
 <body>
@@ -2498,7 +2525,7 @@
           cell.style.background = hexToRgba(best.hex, Math.min(1, Math.max(0.1, total / 60)));
           cell.title = `${fmtDateKey(dates[di])} ${h > 12 ? h-12 : h}${h < 12 ? 'am' : 'pm'}: ${fmtDuration(total)}`;
         } else {
-          cell.style.background = 'rgba(255,255,255,0.03)';
+          cell.style.background = '#eef3f5';
         }
         grid.appendChild(cell);
       }
