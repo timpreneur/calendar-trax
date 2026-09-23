@@ -15,12 +15,12 @@
 
    Example:
      "#workout": "#616161",
-     "#play":    "#8E24AA",
+     "#play":    "#977ab7",
 ----------------------------------------------------- */
 const CUSTOM_COLORS = {
-  // "#work":    "#33B679",
+  // "#work":    "#39a88c",
   // "#workout": "#616161",
-  // "#play":    "#8E24AA",
+  // "#play":    "#977ab7",
 };
 
 
@@ -31,21 +31,21 @@ const CUSTOM_COLORS = {
    than colors. Feel free to add, remove, or reorder.
 ----------------------------------------------------- */
 const COLOR_PALETTE = [
-  "#7986CB", // indigo
-  "#33B679", // green
-  "#E67C73", // salmon
-  "#F6BF26", // yellow
-  "#039BE5", // blue
-  "#8E24AA", // purple
-  "#D50000", // red
-  "#0B8043", // dark green
-  "#F4511E", // orange
-  "#3F51B5", // deep blue
-  "#E91E63", // pink
-  "#00897B", // teal
-  "#FB8C00", // amber
-  "#546E7A", // slate
-  "#C0CA33", // lime
+  "#6b90a6", // indigo
+  "#39a88c", // green
+  "#d8868e", // salmon
+  "#d4ad45", // yellow
+  "#169db5", // blue
+  "#977ab7", // purple
+  "#bd6070", // red
+  "#39866b", // dark green
+  "#c48b5d", // orange
+  "#7784ac", // deep blue
+  "#bd799b", // pink
+  "#398f94", // teal
+  "#bd9a54", // amber
+  "#617d8b", // slate
+  "#939c64", // lime
 ];
 
 
@@ -53,7 +53,7 @@ const COLOR_PALETTE = [
    UNCATEGORIZED
    Label and color for events with no #hashtag.
 ----------------------------------------------------- */
-const UNCATEGORIZED = { label: "Uncategorized", hex: "#9E9E9E" };
+const UNCATEGORIZED = { label: "Uncategorized", hex: "#81949d" };
 
 
 /* -----------------------------------------------------
